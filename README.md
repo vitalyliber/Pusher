@@ -1,24 +1,18 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+1. Install VSCode
 
-Things you may want to cover:
+2. Open DevContainer
 
-* Ruby version
+3. Run the Rails server
 
-* System dependencies
 
-* Configuration
+```bash
+bin/rails server
+```
 
-* Database creation
+4. Run the Tailwind process
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```bash
+bin/rails tailwindcss:watch
+```
