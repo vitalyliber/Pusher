@@ -2,8 +2,8 @@
 # check=error=true
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
-# docker build -t gold_stack .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name gold_stack gold_stack
+# docker build -t pusher .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name pusher pusher
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
