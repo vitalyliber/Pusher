@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_04_150008) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_11_185321) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -24,13 +24,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_04_150008) do
   end
 
   create_table "mobile_devices", force: :cascade do |t|
-    t.integer "device_type", default: 0
     t.string "device_token"
     t.bigint "mobile_user_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["device_type", "device_token"], name: "index_mobile_devices_on_device_type_and_device_token", unique: true
-    t.index ["device_type"], name: "index_mobile_devices_on_device_type"
+    t.string "user_info"
+    t.string "device_info"
     t.index ["mobile_user_id"], name: "index_mobile_devices_on_mobile_user_id"
   end
 
