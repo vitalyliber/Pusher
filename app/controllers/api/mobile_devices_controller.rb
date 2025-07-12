@@ -29,6 +29,6 @@ class Api::MobileDevicesController < ApplicationController
   end
 
   def mobile_device_full_params
-    params.expect(mobile_device: [ :device_token, :user_info, :device_info, :external_key ]).merge(mobile_access: current_app)
+    params.expect(mobile_device: [ :device_token, :user_info, :device_info, :external_key ]).merge(mobile_access:)
   end
 end

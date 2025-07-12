@@ -7,11 +7,11 @@ class ApplicationController < ActionController::Base
 
   def restrict_access
     authenticate_or_request_with_http_token do |token, _options|
-      token.present? && (@_current_app = MobileAccess.find_by(server_token: token))
+      token.present? && (@_mobile_access = MobileAccess.find_by(server_token: token))
     end
   end
 
-  def current_app
-    @_current_app
+  def mobile_access
+    @_mobile_access
   end
 end
