@@ -1,4 +1,4 @@
-class MobileDevicesController < ApplicationController
+class Api::MobileDevicesController < ApplicationController
   def create
     mobile_device = MobileDevice.find_by(mobile_device_search_params)
 

@@ -4,9 +4,9 @@
 
 ## Endpoints
 
-* [POST /mobile_devices](#create-mobile-device)
-* [DELETE /mobile_device/:push_token](#remove-mobile-device)
-* [POST /push_notifications](#create-push-notifications)
+* [POST /api/mobile_devices](#create-mobile-device)
+* [DELETE /api/mobile_device/:push_token](#remove-mobile-device)
+* [POST /api/push_notifications](#create-push-notifications)
 
 
 Auth headers:
@@ -19,7 +19,7 @@ Auth headers:
 
 _Run this method every time after starting a mobile application._
 
-POST `/mobile_devices`
+POST `/api/mobile_devices`
 Params:
 
 ```json
@@ -39,7 +39,7 @@ Response status: `200`
 
 _Run this method when the user logout._
 
-DELETE `/mobile_device/:push_token`
+DELETE `/api/mobile_device/:push_token`
 
 Response status: `200`
 
@@ -47,7 +47,7 @@ Response status: `200`
 
 _Run this method on the server side_
 
-POST `/push_notifications`
+POST `/api/push_notifications`
 Params:
 
 ```json

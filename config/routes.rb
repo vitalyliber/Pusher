@@ -12,6 +12,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  resources :mobile_devices
-  resources :notifications
+  namespace :api do
+    resources :mobile_devices
+    resources :notifications
+  end
 end

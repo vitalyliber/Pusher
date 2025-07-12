@@ -1,6 +1,6 @@
 require "test_helper"
 
-class MobileDevicesControllerTest < ActionDispatch::IntegrationTest
+class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @mobile_access = mobile_accesses(:mobile_access)
     @valid_token = @mobile_access.server_token
@@ -13,7 +13,7 @@ class MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create mobile device" do
     assert_difference("MobileDevice.count") do
-      authenticated_request(:post, mobile_devices_url, params: {
+      authenticated_request(:post, api_mobile_devices_url, params: {
         mobile_device: {
           device_token: "67890",
           user_info: "New User Info",
@@ -26,7 +26,7 @@ class MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should return existing mobile device and user" do
-    authenticated_request(:post, mobile_devices_url, params: {
+    authenticated_request(:post, api_mobile_devices_url, params: {
       mobile_device: {
         device_token: "12345"
       }
@@ -39,7 +39,7 @@ class MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create mobile device with invalid params" do
     assert_no_difference("MobileDevice.count") do
-      authenticated_request(:post, mobile_devices_url, params: {
+      authenticated_request(:post, api_mobile_devices_url, params: {
         mobile_device: {
           device_token: nil,
           external_key: "user_external_key"
@@ -54,7 +54,7 @@ class MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "should destroy mobile device" do
     assert_difference("MobileDevice.count", -1) do
-      authenticated_request(:delete, mobile_device_url(@mobile_device.device_token))
+      authenticated_request(:delete, api_mobile_device_url(@mobile_device.device_token))
     end
     assert_response :success
   end
