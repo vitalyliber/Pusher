@@ -1,0 +1,3 @@
+mobile_access:
+  app_name: "TestApp"
+  server_token: valid_token

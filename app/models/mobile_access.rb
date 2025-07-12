@@ -3,7 +3,6 @@ class MobileAccess < ApplicationRecord
   before_create :generate_client_token
   validates_presence_of :app_name
   validates_uniqueness_of :app_name
-  has_many :mobile_users
 
   private
 

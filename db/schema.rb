@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_12_133701) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_12_192437) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -25,26 +25,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_12_133701) do
 
   create_table "mobile_devices", force: :cascade do |t|
     t.string "device_token"
-    t.bigint "mobile_user_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "user_info"
     t.string "device_info"
     t.string "external_key"
     t.bigint "mobile_access_id"
+    t.index ["external_key", "device_token", "mobile_access_id"], name: "index_mobile_devices_on_unique_combination", unique: true
     t.index ["external_key"], name: "index_mobile_devices_on_external_key"
     t.index ["mobile_access_id"], name: "index_mobile_devices_on_mobile_access_id"
-    t.index ["mobile_user_id"], name: "index_mobile_devices_on_mobile_user_id"
-  end
-
-  create_table "mobile_users", force: :cascade do |t|
-    t.citext "external_key"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.bigint "mobile_access_id"
-    t.index ["external_key", "mobile_access_id"], name: "index_mobile_users_on_external_key_and_mobile_access_id", unique: true
-    t.index ["external_key"], name: "index_mobile_users_on_external_key"
-    t.index ["mobile_access_id"], name: "index_mobile_users_on_mobile_access_id"
   end
 
   create_table "rpush_apps", force: :cascade do |t|
@@ -119,6 +108,4 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_12_133701) do
   end
 
   add_foreign_key "mobile_devices", "mobile_accesses"
-  add_foreign_key "mobile_devices", "mobile_users"
-  add_foreign_key "mobile_users", "mobile_accesses"
 end

@@ -27,9 +27,7 @@ Params:
     "mobile_device": {
         "device_token": "xxx",
         "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
-        "device_info": "iOS/Andoid, Samsung Galaxy s25"
-    },
-    "mobile_user": {
+        "device_info": "iOS/Andoid, Samsung Galaxy s25",
         "external_key": 123
     }
 }
@@ -55,7 +53,7 @@ Params:
 ```json
 {
     "data": {}, // You can find the data example below
-    "mobile_user": {
+    "mobile_device": {
         "external_key": 123, // server user identifier
     }
 }
