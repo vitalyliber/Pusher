@@ -16,4 +16,6 @@ Rails.application.routes.draw do
     resources :mobile_devices
     resources :notifications
   end
+
+  resources :sessions, only: [ :create, :destroy ]
 end
