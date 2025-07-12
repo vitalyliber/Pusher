@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_11_185321) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_12_133701) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -30,6 +30,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_11_185321) do
     t.datetime "updated_at", precision: nil, null: false
     t.string "user_info"
     t.string "device_info"
+    t.string "external_key"
+    t.bigint "mobile_access_id"
+    t.index ["external_key"], name: "index_mobile_devices_on_external_key"
+    t.index ["mobile_access_id"], name: "index_mobile_devices_on_mobile_access_id"
     t.index ["mobile_user_id"], name: "index_mobile_devices_on_mobile_user_id"
   end
 
@@ -114,6 +118,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_11_185321) do
     t.index ["delivered", "failed", "processing", "deliver_after", "created_at"], name: "index_rpush_notifications_multi", where: "((NOT delivered) AND (NOT failed))"
   end
 
+  add_foreign_key "mobile_devices", "mobile_accesses"
   add_foreign_key "mobile_devices", "mobile_users"
   add_foreign_key "mobile_users", "mobile_accesses"
 end
