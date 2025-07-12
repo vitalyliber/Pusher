@@ -1,4 +1,4 @@
-class Api::NotificationsController < ApplicationController
+class Api::NotificationsController < ApiController
   def create
     service = FcmNotificationService.new(mobile_access.service_account)
     result = service.send_notification(notification_params)
