@@ -42,16 +42,24 @@
       </form>
     <% else %>
       <div class="flex items-center space-x-4">
-        <a href="<%= root_path(show_login_input: true) %>" class="text-lg cursor-pointer">
-          Login
-        </a>
-        <%= form_with url: session_path(:delete), method: :delete do %>
-          <%= submit_tag "Logout", class: "text-lg cursor-pointer", data: { confirm: "Are you sure?" } %>
+        <% if mobile_access %>
+          <%= form_with url: session_path(:delete), method: :delete do %>
+            <%= submit_tag "Logout", class: "text-lg cursor-pointer", data: { confirm: "Are you sure?" } %>
+          <% end %>
+        <% else %>
+          <a href="<%= root_path(show_login_input: true) %>" class="text-lg cursor-pointer">
+            Login
+          </a>
         <% end %>
       </div>
     <% end %>
   </div>
-  <main class="container mx-auto mt-28 px-5 flex">
+  <main class="container mx-auto mt-28 px-5">
+    <% if flash[:notice] %>
+      <div class="text-center bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
     <%= yield %>
   </main>
 </body>
