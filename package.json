@@ -1,0 +1,21 @@
+{
+  "name": "pusher",
+  "version": "1.0.0",
+  "description": "## API",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitalyliber/Pusher.git"
+  },
+  "author": "Vitaly Liber",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vitalyliber/Pusher/issues"
+  },
+  "homepage": "https://github.com/vitalyliber/Pusher#readme",
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.10"
+  }
+}
