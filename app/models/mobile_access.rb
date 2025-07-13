@@ -5,7 +5,7 @@ class MobileAccess < ApplicationRecord
   validates_uniqueness_of :app_name
 
   def service_account
-    RpushApp.find_by(name: app_name).try(:json_key)
+    RpushApp.where(name: app_name).try(:last).try(:json_key)
   end
 
   private

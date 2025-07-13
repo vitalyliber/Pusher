@@ -6,7 +6,7 @@ class FcmNotificationService
     @fcm = FCM.new(service_account["private_key"], service_account)
   end
 
-  def send_notification(data, topic, external_key)
+  def send_notification(data:, topic:, external_key:)
     if topic
       send_to_topic(topic, data)
     else
