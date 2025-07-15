@@ -3,11 +3,9 @@ class NotificationsController < ApplicationController
   end
 
   def create
-    service = FcmNotificationService.new(mobile_access.service_account)
-    @result = service.send_notification(
+    @result = mobile_access.send_notification(
       data: notification_params[:data],
-      topic: notification_params[:topic],
-      external_key: notification_params[:external_key]
+      topic: notification_params[:topic]
     )
     render "index"
   end
@@ -15,6 +13,6 @@ class NotificationsController < ApplicationController
   private
 
   def notification_params
-    params.expect(notification: [ :data, :topic, :external_key ])
+    params.expect(notification: [ :data, :topic ])
   end
 end

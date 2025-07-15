@@ -4,11 +4,22 @@ class MobileAccess < ApplicationRecord
   validates_presence_of :app_name
   validates_uniqueness_of :app_name
 
-  def service_account
-    RpushApp.where(name: app_name).try(:last).try(:json_key)
+  def send_notification(data:, topic:)
+    notification_service.send_notification(
+      data: data,
+      topic: topic,
+    )
   end
 
   private
+
+  def notification_service
+    FcmNotificationService.new(service_account)
+  end
+
+  def service_account
+    RpushApp.where(name: app_name).try(:last).try(:json_key)
+  end
 
   def generate_server_token
     self.server_token = SecureRandom.urlsafe_base64

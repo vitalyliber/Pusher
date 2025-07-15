@@ -1,10 +1,8 @@
 class Api::NotificationsController < ApiController
   def create
-    service = FcmNotificationService.new(mobile_access.service_account)
-    result = service.send_notification(
+    result = mobile_access.send_notification(
       data: notification_params[:data],
-      topic: notification_params[:topic],
-      external_key: notification_params[:external_key]
+      topic: notification_params[:topic]
     )
 
     if result[:success]
