@@ -2,9 +2,13 @@ class Api::MobileDevicesController < ApiController
   def create
     mobile_device = MobileDevice.find_by(mobile_device_search_params)
 
-    return render json: {
-      mobile_device: mobile_device
-    } if mobile_device
+    if mobile_device
+      mobile_device.touch
+
+      return render json: {
+        mobile_device: mobile_device
+      }
+    end
 
     mobile_device = MobileDevice.new(mobile_device_full_params)
 
