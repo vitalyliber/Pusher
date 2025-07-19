@@ -1,18 +1,33 @@
 require "fcm"
 
 class FcmNotificationService
-  def initialize(service_account)
+  def initialize(service_account, project_id)
+    @project_id = project_id
     parsed_service_account = JSON.parse(service_account) if service_account.is_a?(String)
     @fcm = FCM.new(StringIO.new(service_account), parsed_service_account["project_id"])
   end
 
-  def send_notification(data:, topic:)
+  def recover_notification_key(external_key)
+    response = @fcm.recover_notification_key(external_key, @project_id)
+    if response[:response] == "success"
+      JSON.parse(response[:body])["notification_key"]
+    end
+  end
+
+  def create_notification_key(external_key, registration_ids)
+    @fcm.create(external_key, @project_id, registration_ids)
+  end
+
+  def send_notification(data:, topic: nil, external_key: nil)
+    token = nil
+    if external_key.present?
+      token = recover_notification_key(external_key)
+    end
     data = JSON.parse(data) if data.is_a?(String)
+    data = { **data, topic:, token: }.compact
 
     return { success: false, error: "The data must be a valid JSON object" } unless data.is_a?(Hash)
-    return { success: false, error: "The topic must be present" } unless topic.present?
-
-    send_to_topic(topic, data)
+    send(data)
   rescue StandardError => e
     Rails.logger.error "Error sending FCM notification: #{e.message}"
     { success: false, error: e.message }
@@ -20,8 +35,8 @@ class FcmNotificationService
 
   private
 
-  def send_to_topic(topic, payload)
-    response = @fcm.send_to_topic(topic, payload)
+  def send(data)
+    response = @fcm.send_v1(data)
     Rails.logger.info "FCM notification sent to topic: #{response}"
     { success: true, response: response }
   end

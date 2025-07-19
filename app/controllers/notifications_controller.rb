@@ -5,7 +5,8 @@ class NotificationsController < ApplicationController
   def create
     @result = mobile_access.send_notification(
       data: notification_params[:data],
-      topic: notification_params[:topic]
+      topic: notification_params[:topic],
+      external_key: notification_params[:external_key]
     )
     render "index"
   end
@@ -13,6 +14,6 @@ class NotificationsController < ApplicationController
   private
 
   def notification_params
-    params.expect(notification: [ :data, :topic ])
+    params.expect(notification: [ :data, :topic, :external_key ])
   end
 end

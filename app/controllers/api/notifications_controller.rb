@@ -2,7 +2,8 @@ class Api::NotificationsController < ApiController
   def create
     result = mobile_access.send_notification(
       data: notification_params[:data],
-      topic: notification_params[:topic]
+      topic: notification_params[:topic],
+      external_key: notification_params[:external_key],
     )
 
     if result[:success]
