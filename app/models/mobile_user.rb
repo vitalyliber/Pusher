@@ -11,7 +11,17 @@ class MobileUser < ApplicationRecord
   after_update :update_topics, if: :saved_change_to_topics?
 
   def update_topics
+    previous_topics = saved_change_to_topics.first
+
     mobile_devices.each do |device|
+      if previous_topics.present?
+        previous_topics.each do |topic|
+          p "Unsubscribing from topic: #{topic} with external_key: #{device.device_token}"
+          notification_service.topic_unsubscription(topic, device.device_token)
+        end
+      end
+
+      # Current topics
       topics.each do |topic|
         p "Subscribing to topic: #{topic} with external_key: #{device.device_token}"
         notification_service.topic_subscription(topic, device.device_token)

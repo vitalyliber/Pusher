@@ -37,6 +37,10 @@ class FcmNotificationService
     @fcm.topic_subscription(topic, registration_token)
   end
 
+  def topic_unsubscription(topic, registration_token)
+    @fcm.topic_unsubscription(topic, registration_token)
+  end
+
   private
 
   def send(data)
