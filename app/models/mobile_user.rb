@@ -13,20 +13,22 @@ class MobileUser < ApplicationRecord
   def update_topics
     previous_topics = saved_change_to_topics.first
 
-    mobile_devices.each do |device|
-      if previous_topics.present?
-        previous_topics.each do |topic|
-          p "Unsubscribing from topic: #{topic} with external_key: #{device.device_token}"
-          notification_service.topic_unsubscription(topic, device.device_token)
-        end
-      end
-
-      # Current topics
-      topics.each do |topic|
-        p "Subscribing to topic: #{topic} with external_key: #{device.device_token}"
-        notification_service.topic_subscription(topic, device.device_token)
+    if previous_topics.present?
+      previous_topics.each do |topic|
+        p "Unsubscribing from topic: #{topic} with device tokens: #{device_tokens}"
+        notification_service.batch_topic_subscription(topic, device_tokens)
       end
     end
+
+    # Current topics
+    topics.each do |topic|
+      p "Subscribing to topic: #{topic} with device tokens: #{device_tokens}"
+      notification_service.batch_topic_subscription(topic, device_tokens)
+    end
+  end
+
+  def device_tokens
+    mobile_devices.pluck(:device_token).compact
   end
 
   def notification_service

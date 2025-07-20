@@ -33,12 +33,12 @@ class FcmNotificationService
     { success: false, error: e.message }
   end
 
-  def topic_subscription(topic, registration_token)
-    @fcm.topic_subscription(topic, registration_token)
+  def batch_topic_subscription(topic, registration_tokens)
+    @fcm.batch_topic_subscription(topic, registration_tokens)
   end
 
-  def topic_unsubscription(topic, registration_token)
-    @fcm.topic_unsubscription(topic, registration_token)
+  def batch_topic_subscription(topic, registration_tokens)
+    @fcm.batch_topic_subscription(topic, registration_tokens)
   end
 
   private
