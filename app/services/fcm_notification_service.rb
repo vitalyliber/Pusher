@@ -15,13 +15,18 @@ class FcmNotificationService
   end
 
   def create_notification_key(external_key, registration_ids)
-    @fcm.create(external_key, @project_id, registration_ids)
+    response = @fcm.create(external_key, @project_id, registration_ids)
+    body = JSON.parse(response[:body])
+    return recover_notification_key(external_key) if body["error"] == "notification_key already exists"
+    if response[:response] == "success"
+      body["notification_key"]
+    end
   end
 
   def send_notification(data:, topic: nil, external_key: nil)
     token = nil
     if external_key.present?
-      token = recover_notification_key(external_key)
+      token = MobileUser.find_by(external_key:).device_group_token
     end
     data = JSON.parse(data) if data.is_a?(String)
     data = { **data, topic:, token: }.compact

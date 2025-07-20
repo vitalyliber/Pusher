@@ -1,13 +1,12 @@
 class MobileUser < ApplicationRecord
   belongs_to :mobile_access
 
-  validates :device_group_token, presence: true
   validates :external_key, presence: true, uniqueness: { scope: [ :device_group_token, :mobile_access_id ] }
   validates :topics, presence: true
 
   has_many :mobile_devices, foreign_key: :external_key, primary_key: :external_key
 
-  after_create :update_topics
+  after_create :update_topics, :create_device_group_token
   after_update :update_topics, if: :saved_change_to_topics?
 
   def update_topics
@@ -33,5 +32,10 @@ class MobileUser < ApplicationRecord
 
   def notification_service
     @_notification_service ||= mobile_access.notification_service
+  end
+
+  def create_device_group_token
+    device_group_token = notification_service.create_notification_key(external_key, device_tokens)
+    update(device_group_token:) if device_group_token.present?
   end
 end
