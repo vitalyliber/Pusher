@@ -1,3 +1,4 @@
 mobile_device:
   device_token: "12345"
   mobile_access: "mobile_access"
+  external_key: "user123"

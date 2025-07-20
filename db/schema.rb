@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_19_165528) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_20_182341) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -38,6 +38,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_19_165528) do
     t.index ["mobile_access_id"], name: "index_mobile_devices_on_mobile_access_id"
   end
 
+  create_table "mobile_users", force: :cascade do |t|
+    t.text "device_group_token"
+    t.text "topics", default: ["general"], array: true
+    t.string "external_key", default: ""
+    t.bigint "mobile_access_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["external_key", "mobile_access_id"], name: "index_mobile_users_on_unique_combination", unique: true
+    t.index ["mobile_access_id"], name: "index_mobile_users_on_mobile_access_id"
+  end
+
   create_table "rpush_apps", force: :cascade do |t|
     t.string "name", null: false
     t.string "environment"
@@ -62,4 +73,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_19_165528) do
   end
 
   add_foreign_key "mobile_devices", "mobile_accesses"
+  add_foreign_key "mobile_users", "mobile_accesses"
 end
