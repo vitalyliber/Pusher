@@ -33,6 +33,10 @@ class FcmNotificationService
     { success: false, error: e.message }
   end
 
+  def topic_subscription(topic, registration_token)
+    @fcm.topic_subscription(topic, registration_token)
+  end
+
   private
 
   def send(data)
