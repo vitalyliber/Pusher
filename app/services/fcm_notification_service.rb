@@ -9,6 +9,7 @@ class FcmNotificationService
 
   def recover_notification_key(external_key)
     response = @fcm.recover_notification_key(external_key, @project_id)
+    Rails.logger.info "Recovering notification key for external_key: #{external_key}, response: #{response}"
     if response[:response] == "success"
       JSON.parse(response[:body])["notification_key"]
     end
@@ -16,6 +17,7 @@ class FcmNotificationService
 
   def create_notification_key(external_key, registration_ids)
     response = @fcm.create(external_key, @project_id, registration_ids)
+    Rails.logger.info "Creating notification key for external_key: #{external_key}, response: #{response}"
     body = JSON.parse(response[:body])
     return recover_notification_key(external_key) if body["error"] == "notification_key already exists"
     if response[:response] == "success"
@@ -25,12 +27,16 @@ class FcmNotificationService
 
   def add(external_key, notification_key, registration_ids)
     response = @fcm.add(external_key, @project_id, notification_key, registration_ids)
-    p response
+    Rails.logger.info "Adding registration_ids for external_key: #{external_key}, response: #{response}"
+    body = JSON.parse(response[:body])
+    if body["error"] == "notification_key not found" || body["error"]&.include?("Secure token does not match")
+      { notification_key: create_notification_key(external_key, registration_ids) }
+    end
   end
 
   def remove(external_key, notification_key, registration_ids)
     response = @fcm.remove(external_key, @project_id, notification_key, registration_ids)
-    p response
+    Rails.logger.info response
   end
 
   def send_notification(data:, topic: nil, external_key: nil)

@@ -40,7 +40,13 @@ class MobileUser < ApplicationRecord
   end
 
   def update_device_tokens_in_device_group
-    notification_service.add(external_key, device_group_token, device_tokens)
+    result = notification_service.add(external_key, device_group_token, device_tokens)
+    if result&.dig(:notification_key)
+      update(device_group_token: result[:notification_key])
+      update_device_tokens_in_device_group
+    else
+      Rails.logger.error "Failed to update device tokens in device group for external_key: #{external_key} and mobile_access_id: #{mobile_access_id}"
+    end
   end
 
   def remove_device_token_from_device_group(registration_ids)
