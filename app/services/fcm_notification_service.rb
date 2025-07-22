@@ -45,7 +45,8 @@ class FcmNotificationService
       token = MobileUser.find_by(external_key:).device_group_token
     end
     data = JSON.parse(data) if data.is_a?(String)
-    data = { **data, topic:, token: }.compact
+    data = { **data, topic:, token: }.reject { |key, value| value.blank? }
+    Rails.logger.info "Sending FCM notification with data: #{data}, topic: #{topic}, external_key: #{external_key}"
 
     return { success: false, error: "The data must be a valid JSON object" } unless data.is_a?(Hash)
     send(data)
