@@ -42,4 +42,8 @@ class MobileUser < ApplicationRecord
   def update_device_tokens_in_device_group
     notification_service.add(external_key, device_group_token, device_tokens)
   end
+
+  def remove_device_token_from_device_group(registration_ids)
+    notification_service.remove(external_key, device_group_token, registration_ids)
+  end
 end

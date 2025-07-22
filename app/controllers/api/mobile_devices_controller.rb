@@ -24,9 +24,12 @@ class Api::MobileDevicesController < ApiController
   end
 
   def destroy
-    MobileDevice
-        .find_by(device_token: params[:id])
-        .try(:delete)
+    mobile_device = MobileDevice.find_by(device_token: params[:id])
+
+    RemoveDeviceTokenJob.perform_later(mobile_access.id, params[:id], mobile_device.external_key)
+
+    mobile_device.delete
+
     render json: {}
   end
 
