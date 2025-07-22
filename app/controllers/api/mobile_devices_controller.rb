@@ -19,6 +19,8 @@ class Api::MobileDevicesController < ApiController
     else
       render json: { errors: mobile_device.errors.full_messages }, status: 400
     end
+
+    SyncMobileUserJob.perform_later(mobile_access.id, mobile_device_full_params[:external_key])
   end
 
   def destroy

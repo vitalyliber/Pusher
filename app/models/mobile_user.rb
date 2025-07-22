@@ -10,7 +10,7 @@ class MobileUser < ApplicationRecord
   after_update :update_topics, if: :saved_change_to_topics?
 
   def update_topics
-    previous_topics = saved_change_to_topics.first
+    previous_topics = saved_change_to_topics&.first
 
     if previous_topics.present?
       previous_topics.each do |topic|
@@ -37,5 +37,9 @@ class MobileUser < ApplicationRecord
   def create_device_group_token
     device_group_token = notification_service.create_notification_key(external_key, device_tokens)
     update(device_group_token:) if device_group_token.present?
+  end
+
+  def update_device_tokens_in_device_group
+    notification_service.add(external_key, device_group_token, device_tokens)
   end
 end

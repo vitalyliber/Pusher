@@ -23,6 +23,11 @@ class FcmNotificationService
     end
   end
 
+  def add(external_key, notification_key, registration_ids)
+    response = @fcm.add(external_key, @project_id, notification_key, registration_ids)
+    p response
+  end
+
   def send_notification(data:, topic: nil, external_key: nil)
     token = nil
     if external_key.present?
