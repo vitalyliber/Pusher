@@ -2,7 +2,7 @@
   <div class="max-w-5xl mx-auto bg-gray-50 py-10 rounded-sm px-5">
     <% if mobile_access %>
       <%= form_with url: notifications_path, method: :post, class: "space-y-6" do %>
-        <div class="space-y-4">
+        <div class="space-y-4" data-controller="json-input-persister" data-input-persister-key="notification_data">
           <label class="font-semibold block">
             Data
           </label>
@@ -52,32 +52,5 @@
         <% end %>
       </div>
     </div>
-    <script>
-      const container = document.getElementById("jsoneditor")
-      const hiddenInput = document.getElementById('data');
-      const options = {
-        onChangeText: function (jsonString) {
-        try {
-          hiddenInput.value = jsonString;
-        } catch (e) {
-          console.error('Invalid JSON:', e);
-          hiddenInput.value = '';
-        }
-        }
-      }
-      const editor = new JSONEditor(container, options)
-
-      const initialJson = {
-        notification: {
-          title: "Hey",
-          body:":)",
-        },
-        data: {
-          "key1": "value1",
-          "key2": "value2"
-        }
-      }
-      editor.set(initialJson)
-
-      hiddenInput.value = JSON.stringify(initialJson);
-    </script>
+  </div>
+</div>
