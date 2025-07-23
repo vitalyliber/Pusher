@@ -13,12 +13,19 @@
     </textarea>
   </div>
   <% if @target == "one" %>
-    <div class="space-y-4">
-      <label class="font-semibold block">
-        External Key
-      </label>
+    <div class="space-y-4" data-controller="mobile-device-search">
+      <div class="flex items-center justify-start space-x-4">
+        <label class="font-semibold block">
+          External Key
+        </label>
+        <turbo-frame id="search_results" data-mobile-device-search-target="frame">
+          <div class="loader border-t-transparent border-solid rounded-full animate-spin border-4 border-blue-500 size-4"></div>
+        </turbo-frame>
+      </div>
       <input
+        data-mobile-device-search-target="input"
         data-controller="input-persister"
+        data-action="input->mobile-device-search#search"
         data-action="input->input-persister#save"
         placeholder="External Key"
         class="w-full px-4 py-3 rounded"

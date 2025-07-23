@@ -4,6 +4,8 @@ class MobileAccess < ApplicationRecord
   validates_presence_of :app_name
   validates_uniqueness_of :app_name
 
+  has_many :mobile_devices
+
   def send_notification(data:, topic: nil, external_key: nil)
     notification_service.send_notification(
       data:,

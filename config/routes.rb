@@ -18,5 +18,7 @@ Rails.application.routes.draw do
   end
 
   resources :sessions, only: [ :create, :destroy ]
-  resources :notifications, only: [ :create ]
+  resources :notifications, only: [ :create ] do
+    get "search_mobile_devices", on: :collection
+  end
 end

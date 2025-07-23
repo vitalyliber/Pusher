@@ -13,6 +13,15 @@ class NotificationsController < ApplicationController
     render :index, status: :unprocessable_entity
   end
 
+  def search_mobile_devices
+    query = params[:query]
+    if query.present?
+      @mobile_devices = mobile_access.mobile_devices.where(external_key: query)
+    else
+      @mobile_devices = MobileDevice.none
+    end
+  end
+
   private
 
   def notification_params
