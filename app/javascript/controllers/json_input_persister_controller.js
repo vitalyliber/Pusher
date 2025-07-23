@@ -5,6 +5,7 @@ import { Controller } from "@hotwired/stimulus";
 import JSONEditor from "jsoneditor";
 
 export default class extends Controller {
+  static targets = ["editor", "input"];
   static values = { key: String };
 
   connect() {
@@ -13,22 +14,19 @@ export default class extends Controller {
   }
 
   initializeJsonEditor() {
-    const container = this.element.querySelector("#jsoneditor");
-    this.hiddenInput = this.element.querySelector("#data");
-
     const options = {
       onChangeText: (jsonString) => {
         try {
-          this.hiddenInput.value = jsonString;
+          this.inputTarget.value = jsonString;
           this.save();
         } catch (e) {
           console.error("Invalid JSON:", e);
-          this.hiddenInput.value = "";
+          this.inputTarget.value = "";
         }
       },
     };
 
-    this.editor = new JSONEditor(container, options);
+    this.editor = new JSONEditor(this.editorTarget, options);
 
     const initialJson = {
       notification: {
@@ -41,14 +39,14 @@ export default class extends Controller {
       },
     };
 
-    if (!this.hiddenInput.value) {
+    if (!this.inputTarget.value) {
       this.editor.set(initialJson);
-      this.hiddenInput.value = JSON.stringify(initialJson);
+      this.inputTarget.value = JSON.stringify(initialJson);
     }
   }
 
   save() {
-    localStorage.setItem(this.getStorageKey(), this.hiddenInput.value);
+    localStorage.setItem(this.getStorageKey(), this.inputTarget.value);
   }
 
   load() {
@@ -57,7 +55,7 @@ export default class extends Controller {
       try {
         const parsedJson = JSON.parse(savedValue);
         this.editor.set(parsedJson);
-        this.hiddenInput.value = savedValue;
+        this.inputTarget.value = savedValue;
       } catch (e) {
         console.error("Failed to parse saved JSON:", e);
       }
@@ -65,11 +63,10 @@ export default class extends Controller {
   }
 
   getStorageKey() {
-    // Unique key based on data-input-persister-key, id or name
     return (
       this.element.dataset.inputPersisterKey ||
-      this.hiddenInput.id ||
-      this.hiddenInput.name
+      this.inputTarget.id ||
+      this.inputTarget.name
     );
   }
 }
