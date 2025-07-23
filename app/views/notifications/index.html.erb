@@ -6,6 +6,17 @@
         <%= link_to "Multiple", root_path(target: "multiple"), class: class_names("w-24 btn", "btn-soft": @target.blank?, "btn-secondary": @target == "multiple") %>
       </div>
       <%= render "form" %>
+      <% if @result %>
+        <h2 class="font-bold text-lg mb-4 mt-6">
+          Server Response:
+        </h2>
+        <pre class="bg-white p-4 rounded text-sm">
+          <code>
+            <%= JSON.pretty_generate(@result).strip %>
+          </code>
+        </pre>
+        <%= link_to "Clean", root_path(target: @target), class: "btn btn-success mt-6" %>
+      <% end %>
     <% else %>
       <p class="text-center text-gray-500">
         Please log in to continue

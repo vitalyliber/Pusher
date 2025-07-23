@@ -46,7 +46,7 @@
       </div>
     </div>
   <% end %>
-  <% if @target.present? %>
+  <% if @result.blank? && @target.present? %>
     <button
       data-turbo-confirm="Are you sure?"
       class="<%= class_names("btn", "btn-secondary": @target == "multiple", "btn-neutral": @target == "one") %>" type="submit">
