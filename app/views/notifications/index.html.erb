@@ -1,5 +1,9 @@
 <div class="container mx-auto px-6 lg:px-0">
   <div class="max-w-5xl mx-auto bg-gray-50 py-10 rounded-sm px-5">
+    <div class="flex justify-center items-center space-x-4 mb-14">
+      <%= link_to "One", root_path(target: "one"), class: class_names("w-24 btn", "btn-soft": params[:target].blank?, "btn-neutral": params[:target] == "one") %>
+      <%= link_to "Multiple", root_path(target: "multiple"), class: class_names("w-24 btn", "btn-soft": params[:target].blank?, "btn-secondary": params[:target] == "multiple") %>
+    </div>
     <% if mobile_access %>
       <%= form_with url: notifications_path, method: :post, class: "space-y-6" do %>
         <div class="space-y-4" data-controller="json-input-persister" data-input-persister-key="notification_data">
@@ -11,39 +15,52 @@
           <div class="text-xs text-gray-500">
           </div>
         </div>
-        <div class="space-y-4">
-          <label class="font-semibold block">
-            External Key
-          </label>
-          <input
-            data-controller="input-persister"
-            data-action="input->input-persister#save"
-            placeholder="External Key"
-            class="w-full px-4 py-3 rounded"
-            name="notification[external_key]"
-            value=""/>
-            <div class="text-xs text-gray-500">
-              Use only the Unique User Identifier. This field is not accept the push notification token.
-            </div>
-          </div>
+        <% if params[:target] == "one" %>
           <div class="space-y-4">
             <label class="font-semibold block">
-              Topic
+              External Key
             </label>
             <input
-              data-controller="input-persister"
-              data-action="input->input-persister#save"
-              placeholder="Topic"
+            data-controller="input-persister"
+            data-action="input->input-persister#save"
+              placeholder="External Key"
               class="w-full px-4 py-3 rounded"
-              name="notification[topic]"
+              name="notification[external_key]"
               value=""/>
               <div class="text-xs text-gray-500">
-                You will send messages to all users who subscribed to the topic.
+                Use only the Unique User Identifier. This field is not accept the push notification token.
               </div>
             </div>
-            <button class="btn btn-neutral" type="submit">
-              Send to a chosen user
-            </button>
+          <% end %>
+          <% if params[:target] == "multiple" %>
+            <div class="space-y-4">
+              <label class="font-semibold block">
+                Topic
+              </label>
+              <input
+              data-controller="input-persister"
+              data-action="input->input-persister#save"
+                placeholder="Topic"
+                class="w-full px-4 py-3 rounded"
+                name="notification[topic]"
+                value=""/>
+                <div class="text-xs text-gray-500">
+                  You will send messages to all users who subscribed to the topic.
+                </div>
+              </div>
+            <% end %>
+            <% if params[:target].present? %>
+              <button
+                data-turbo-confirm="Are you sure?"
+                class="<%= class_names("btn", "btn-secondary": params[:target] == "multiple", "btn-neutral": params[:target] == "one") %>" type="submit">
+                <% if params[:target] == "one" %>
+                  Send a Notification to one user
+                <% end %>
+                <% if params[:target] == "multiple" %>
+                  Send a Notification to multiple users
+                <% end %>
+              </button>
+            <% end %>
           <% end %>
         <% else %>
           <p class="text-center text-gray-500">

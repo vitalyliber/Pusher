@@ -60,6 +60,7 @@ export default class extends Controller {
         console.error("Failed to parse saved JSON:", e);
       }
     }
+    this.editor.expandAll();
   }
 
   getStorageKey() {
