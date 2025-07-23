@@ -1,7 +1,4 @@
 import { Controller } from "@hotwired/stimulus";
-
-// Connects to data-controller="json-input-persister" data-action="input->json-input-persister#save"
-// controllers/json_input_persister_controller.js
 import JSONEditor from "jsoneditor";
 
 export default class extends Controller {
@@ -13,7 +10,18 @@ export default class extends Controller {
     this.load();
   }
 
+  disconnect() {
+    if (this.editor) {
+      this.editor.destroy();
+      this.editor = null;
+    }
+  }
+
   initializeJsonEditor() {
+    if (this.editor) {
+      this.editor.destroy();
+    }
+
     const options = {
       onChangeText: (jsonString) => {
         try {
