@@ -1,8 +1,6 @@
 <turbo-frame id="search_results">
   <% if @mobile_devices.any? %>
-    <button class="btn btn-xs">
-      Mobile Devices: <%= @mobile_devices.count %>
-    </button>
+    <%= link_to "Mobile Devices: #{@mobile_devices.count}", mobile_device_path(params[:query]), class: "btn btn-xs" %>
   <% else %>
     <button class="btn btn-xs" disabled>
       <p>Mobile Devices: 0</p>
