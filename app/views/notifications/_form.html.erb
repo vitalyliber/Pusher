@@ -55,13 +55,15 @@
   <% end %>
   <% if @result.blank? && @target.present? %>
     <button
-      data-turbo-confirm="Are you sure?"
+      <% if @target == 'multiple' %>
+        data-turbo-confirm="Are you sure?"
+      <% end %>
       class="<%= class_names("btn", "btn-secondary": @target == "multiple", "btn-neutral": @target == "one") %>" type="submit">
       <% if @target == "one" %>
-        Send a Notification to one user
+        Send to one user
       <% end %>
       <% if @target == "multiple" %>
-        Send a Notification to multiple users
+        Send to multiple users
       <% end %>
     </button>
   <% end %>
