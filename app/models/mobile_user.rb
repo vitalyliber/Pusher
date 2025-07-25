@@ -14,14 +14,14 @@ class MobileUser < ApplicationRecord
 
     if previous_topics.present?
       previous_topics.each do |topic|
-        p "Unsubscribing from topic: #{topic} with device tokens: #{device_tokens}"
+        Rails.logger.error "Unsubscribing from topic: #{topic} with device tokens: #{device_tokens}"
         notification_service.batch_topic_subscription(topic, device_tokens)
       end
     end
 
     # Current topics
     topics.each do |topic|
-      p "Subscribing to topic: #{topic} with device tokens: #{device_tokens}"
+      Rails.logger.error "Subscribing to topic: #{topic} with device tokens: #{device_tokens}"
       notification_service.batch_topic_subscription(topic, device_tokens)
     end
   end

@@ -1,4 +1,5 @@
 require "test_helper"
+require "minitest/mock"
 
 class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -12,18 +13,28 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create mobile device" do
-    assert_difference("MobileDevice.count") do
-      authenticated_request(:post, api_mobile_devices_url, params: {
-        mobile_device: {
-          device_token: "67890",
-          user_info: "New User Info",
-          device_info: "New Device Info",
-          external_key: "new_user_external_key"
-        }
-      })
+    fcm_mock = Minitest::Mock.new
+    fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
+    fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
+
+    assert_difference([ "MobileDevice.count", "MobileUser.count" ], 1) do
+      FCM.stub(:new, fcm_mock) do
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          mobile_device: {
+            device_token: "67890",
+            user_info: "New User Info",
+            device_info: "New Device Info",
+            external_key: "new_user_external_key"
+          }
+        })
+      end
     end
+    fcm_mock.verify
     assert_response :success
   end
+
+  # @TODO: Add tests for existing mobile device and user
+  # Need to ensure that we attach topics and update device tokens in device group for new mobile device for existing mobile user
 
   test "should return existing mobile device and user" do
     authenticated_request(:post, api_mobile_devices_url, params: {
