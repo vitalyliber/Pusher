@@ -15,15 +15,22 @@ class Api::MobileDevicesController < ApiController
     return render(json: { errors: mobile_device.errors.full_messages }, status: 400) unless mobile_device.valid?
 
     if mobile_device.save
-      mobile_user = MobileUser.find_or_create_by(
+      mobile_user = MobileUser.find_by(
         mobile_access:,
         external_key: mobile_device_full_params[:external_key]
       )
 
-      unless Rails.env.test?
+      if mobile_user
         mobile_user.update_device_tokens_in_device_group
-        mobile_device.attach_topics
+      else
+        mobile_user = MobileUser.create(
+          mobile_access:,
+          external_key: mobile_device_full_params[:external_key]
+        )
+        mobile_user.create_device_group_token
       end
+
+      mobile_device.attach_topics
 
       render json: {}
     else

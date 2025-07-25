@@ -7,7 +7,7 @@ class MobileDevice < ApplicationRecord
   def attach_topics
     mobile_user.topics.each do |topic|
       Rails.logger.error "Subscribing to topic: #{topic} with device token: #{device_token}"
-      notification_service.batch_topic_subscription(topic, [ device_token ])
+      mobile_access.notification_service.batch_topic_subscription(topic, [ device_token ])
     end
   end
 end

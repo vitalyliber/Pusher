@@ -6,7 +6,6 @@ class MobileUser < ApplicationRecord
 
   has_many :mobile_devices, foreign_key: :external_key, primary_key: :external_key
 
-  after_create :update_topics, :create_device_group_token
   after_update :update_topics, if: :saved_change_to_topics?
 
   def update_topics
