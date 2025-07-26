@@ -42,6 +42,8 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
             external_key: "new_user_external_key"
           }
         })
+
+        # @TODO: Change an external_key for existing mobile device
       end
     end
     fcm_mock.verify
@@ -54,7 +56,8 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   test "should return existing mobile device and user" do
     authenticated_request(:post, api_mobile_devices_url, params: {
       mobile_device: {
-        device_token: "12345"
+        device_token: @mobile_device.device_token,
+        external_key: @mobile_device.external_key
       }
     })
     assert_response :success
