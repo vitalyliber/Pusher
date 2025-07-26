@@ -4,15 +4,14 @@
 
 ## Endpoints
 
-* [POST /api/mobile_devices](#create-mobile-device)
-* [DELETE /api/mobile_device/:push_token](#remove-mobile-device)
-* [POST /api/push_notifications](#create-push-notifications)
-
+- [POST /api/mobile_devices](#create-mobile-device)
+- [DELETE /api/mobile_device/:push_token](#remove-mobile-device)
+- [POST /api/push_notifications](#create-push-notifications)
 
 Auth headers:
 
 ```json
-{ Authorization: "Bearer client_token" }
+{ "Authorization": "Bearer client_token" }
 ```
 
 ### Create mobile device
@@ -24,12 +23,12 @@ Params:
 
 ```json
 {
-    "mobile_device": {
-        "device_token": "xxx",
-        "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
-        "device_info": "iOS/Andoid, Samsung Galaxy s25",
-        "external_key": 123
-    }
+  "mobile_device": {
+    "device_token": "xxx",
+    "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
+    "device_info": "iOS/Andoid, Samsung Galaxy s25",
+    "external_key": 123
+  }
 }
 ```
 
@@ -47,15 +46,16 @@ Response status: `200`
 
 _Run this method on the server side_
 
-POST `/api/push_notifications`
+POST `/api/notifications`
 Params:
 
 ```json
 {
+  "notification": {
     "data": {}, // You can find the data example below
-    "mobile_device": {
-        "external_key": 123, // server user identifier
-    }
+    "external_key": "user123",
+    "topic": "test_topic", // Don't use the default "general" topic for test purposes
+  }
 }
 ```
 
