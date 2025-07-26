@@ -15,7 +15,7 @@ class Api::MobileDevicesController < ApiController
         if mobile_device.update(external_key: mobile_device_full_params[:external_key])
           process_mobile_user(mobile_device)
 
-          return render render json: {  mobile_device: }
+          return render json: {  mobile_device: }
         else
           return render json: { errors: mobile_device.errors.full_messages }, status: 400
         end
