@@ -9,11 +9,25 @@
     </span>
   </h1>
   <% if @mobile_user.present? %>
-    <p class="text-gray-700 my-6 text-center">
-      <strong>Topics:</strong> <%= @mobile_user.topics.join(", ") %>
-    </p>
+    <h2 class="text-xl my-6 text-center">
+      Topics:
+    </h2>
+    <ul class="justify-center items-center mb-4 flex gap-4">
+      <% @mobile_user.topics.each do |topic| %>
+        <li>
+          <%= topic %>
+          <%= link_to "x", remove_topic_mobile_user_path(@mobile_user, topic: topic), 
+                      data: { turbo_method: :delete, turbo_frame: "topics_frame", turbo_confirm: "Are you sure you want to remove this topic?" }, 
+                      class: "btn btn-xs btn-error ml-1" %>
+        </li>
+      <% end %>
+    </ul>
+    <%= form_with(url: add_topic_mobile_user_path(@mobile_user), data: { turbo_frame: "topics_frame" }, class: "text-center") do |form| %>
+      <%= form.text_field :topic, value: "", placeholder: "Enter new topic", class: "input" %>
+      <%= form.submit "Add Topic", class: "btn btn-primary ml-4" %>
+    <% end %>
   <% end %>
-  <div class="space-y-4 mt-10">
+  <div class="space-y-4 mt-20">
     <% @mobile_devices.each do %>
       <div class="mb-4 p-4 border rounded-lg bg-white shadow">
         <p class="text-gray-700">

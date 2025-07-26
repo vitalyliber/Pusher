@@ -22,4 +22,8 @@ Rails.application.routes.draw do
     get "search_mobile_devices", on: :collection
   end
   resources :mobile_devices, only: [ :show ]
+  resources :mobile_users, only: [] do
+    delete "remove_topic", on: :member
+    post "add_topic", on: :member
+  end
 end
