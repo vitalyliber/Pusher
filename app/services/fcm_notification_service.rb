@@ -56,11 +56,13 @@ class FcmNotificationService
   end
 
   def batch_topic_subscription(topic, registration_tokens)
-    @fcm.batch_topic_subscription(topic, registration_tokens)
+    result = @fcm.batch_topic_subscription(topic, registration_tokens)
+    Rails.logger.error "Result batch_topic_subscription: #{result}"
   end
 
-  def batch_topic_subscription(topic, registration_tokens)
-    @fcm.batch_topic_subscription(topic, registration_tokens)
+  def batch_topic_unsubscription(topic, registration_tokens)
+    result = @fcm.batch_topic_unsubscription(topic, registration_tokens)
+    Rails.logger.error "Result batch_topic_unsubscription: #{result}"
   end
 
   private

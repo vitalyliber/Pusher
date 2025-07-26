@@ -8,25 +8,29 @@ class MobileUser < ApplicationRecord
 
   after_update :update_topics, if: :saved_change_to_topics?
 
-  def update_topics
-    previous_topics = saved_change_to_topics&.first
+  delegate :batch_topic_subscription, :batch_topic_unsubscription, :create_notification_key, to: :notification_service
 
-    if previous_topics.present?
-      previous_topics.each do |topic|
-        Rails.logger.error "Unsubscribing from topic: #{topic} with device tokens: #{device_tokens}"
-        notification_service.batch_topic_subscription(topic, device_tokens)
-      end
+  def update_topics
+    previous_topics = saved_change_to_topics&.first || []
+    current_topics = topics || []
+
+    # Topics to unsubscribe from (present in previous but not in current)
+    topics_to_remove = previous_topics - current_topics
+    topics_to_remove.each do |topic|
+      Rails.logger.info "Unsubscribing from topic: #{topic} with device tokens: #{device_tokens}"
+      batch_topic_unsubscription(topic, device_tokens)
     end
 
-    # Current topics
-    topics.each do |topic|
-      Rails.logger.error "Subscribing to topic: #{topic} with device tokens: #{device_tokens}"
-      notification_service.batch_topic_subscription(topic, device_tokens)
+    # Topics to subscribe to (present in current but not in previous)
+    topics_to_add = current_topics - previous_topics
+    topics_to_add.each do |topic|
+      Rails.logger.info "Subscribing to topic: #{topic} with device tokens: #{device_tokens}"
+      batch_topic_subscription(topic, device_tokens)
     end
   end
 
   def device_tokens
-    mobile_devices.pluck(:device_token).compact
+    @_device_tokens ||= mobile_devices.pluck(:device_token).compact
   end
 
   def notification_service
@@ -34,7 +38,7 @@ class MobileUser < ApplicationRecord
   end
 
   def create_device_group_token
-    device_group_token = notification_service.create_notification_key(external_key, device_tokens)
+    device_group_token = create_notification_key(external_key, device_tokens)
     update(device_group_token:) if device_group_token.present?
   end
 
