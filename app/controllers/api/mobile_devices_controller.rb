@@ -30,7 +30,7 @@ class Api::MobileDevicesController < ApiController
         mobile_user.create_device_group_token
       end
 
-      mobile_device.attach_topics
+      mobile_device.subscribe_to_topics
 
       render json: {}
     else
@@ -41,8 +41,8 @@ class Api::MobileDevicesController < ApiController
   def destroy
     mobile_device = MobileDevice.find_by(device_token: params[:id])
 
-    RemoveDeviceTokenJob.perform_later(mobile_access.id, params[:id], mobile_device.external_key)
-
+    mobile_device.mobile_user.remove_device_token_from_device_group([ mobile_device.device_token ])
+    mobile_device.unsubscribe_from_topics
     mobile_device.delete
 
     render json: {}

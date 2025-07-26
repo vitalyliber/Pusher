@@ -3,7 +3,11 @@
 one:
   device_group_token: MyText
   topics: ["general", "topic1"]
+  external_key: user123
+  mobile_access: mobile_access
 
 two:
   device_group_token: MyText
   topics: ["general", "topic1"]
+  external_key: user321
+  mobile_access: mobile_access
