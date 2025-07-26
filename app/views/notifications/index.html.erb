@@ -16,6 +16,14 @@
           </code>
         </pre>
         <%= link_to "Clean", root_path(target: @target), class: "btn btn-success mt-6" %>
+        <script>
+          setTimeout(function() {
+              window.scrollTo({
+                      top: document.body.scrollHeight,
+                      behavior: 'smooth'
+              });
+          }, 200);
+        </script>
       <% end %>
     <% else %>
       <p class="text-center text-gray-500">
