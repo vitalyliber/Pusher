@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_20_182341) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_26_130557) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -47,29 +47,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_20_182341) do
     t.datetime "updated_at", null: false
     t.index ["external_key", "mobile_access_id"], name: "index_mobile_users_on_unique_combination", unique: true
     t.index ["mobile_access_id"], name: "index_mobile_users_on_mobile_access_id"
-  end
-
-  create_table "rpush_apps", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "environment"
-    t.text "certificate"
-    t.string "password"
-    t.integer "connections", default: 1, null: false
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.string "type", null: false
-    t.string "auth_key"
-    t.string "client_id"
-    t.string "client_secret"
-    t.string "access_token"
-    t.datetime "access_token_expiration", precision: nil
-    t.text "apn_key"
-    t.string "apn_key_id"
-    t.string "team_id"
-    t.string "bundle_id"
-    t.boolean "feedback_enabled", default: true
-    t.string "firebase_project_id"
-    t.text "json_key"
   end
 
   add_foreign_key "mobile_devices", "mobile_accesses"
