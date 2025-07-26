@@ -14,14 +14,29 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "should create mobile device" do
     fcm_mock = Minitest::Mock.new
+
+    # Firtst call
     fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
     fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
 
-    assert_difference([ "MobileDevice.count", "MobileUser.count" ], 1) do
+    # Second call
+    fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
+    fcm_mock.expect(:add, { body: "{}" }, [ String, nil, nil, Array ])
+
+    assert_difference({ "MobileDevice.count" => 2, "MobileUser.count" => 1 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           mobile_device: {
-            device_token: "67890",
+            device_token: "0001",
+            user_info: "New User Info",
+            device_info: "New Device Info",
+            external_key: "new_user_external_key"
+          }
+        })
+
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          mobile_device: {
+            device_token: "0002",
             user_info: "New User Info",
             device_info: "New Device Info",
             external_key: "new_user_external_key"
