@@ -86,9 +86,9 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: pusher_production
-    username: pusher
-    password: <%= ENV["pusher_DATABASE_PASSWORD"] %>
+    database: <%= ENV["POSTGRES_DB"] %>
+    username: <%= ENV["POSTGRES_USER"] %>
+    password: <%= ENV["POSTGRES_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: pusher_production_cache

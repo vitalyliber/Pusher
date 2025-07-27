@@ -136,3 +136,23 @@ VISUAL="code --wait" bin/rails credentials:edit --environment production
 ```
 
 3. Commit changes.
+
+# Deployment
+
+_Setup_: run only once.
+
+```bash
+kamal setup
+```
+
+_Deployment_
+
+```bash
+kamal deploy
+```
+
+_Rails console_
+
+```bash
+kamal app exec -i 'bin/rails console'
+```
