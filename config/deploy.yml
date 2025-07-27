@@ -40,6 +40,7 @@ env:
     - POSTGRES_DB
   clear:
     RAILS_ENV: production
+    RAILS_MAX_THREADS: 10
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
     SOLID_QUEUE_IN_PUMA: true
