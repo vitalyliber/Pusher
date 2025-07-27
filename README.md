@@ -122,3 +122,17 @@ rails db:schema:load
 
 pg_restore --verbose --clean --no-acl --no-owner -h postgres -p 5432 -U postgres -d pusher_development < rpush
 ```
+
+## Credentials
+
+### How to edit production credentials
+
+1. Create the production.yml.sec file in the dir "/config/credentials"
+
+2. Open production credentials, add changes, close file.
+
+```bash
+VISUAL="code --wait" bin/rails credentials:edit --environment production
+```
+
+3. Commit changes.
