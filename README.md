@@ -54,12 +54,48 @@ Params:
   "notification": {
     "data": {}, // You can find the data example below
     "external_key": "user123",
-    "topic": "test_topic", // Don't use the default "general" topic for test purposes
+    "topic": "test_topic" // Don't use the default "general" topic for test purposes
   }
 }
 ```
 
 Response status: `200`
+
+### Data example
+
+<details>
+  <summary>Open the data example</summary>
+  
+```js
+{
+  'data': {
+    payload: {
+      data: {
+        id: 1
+      }
+    }
+  },
+  'notification': {
+    title: notification.title_th,
+    body: notification.body_th
+  },
+  'android': {
+    priority: 'high'
+  },
+  'apns': {
+    payload: {
+      aps: {
+        sound: "default",
+        category: "category"
+      }
+    }
+  },
+  'fcm_options': {
+    analytics_label: 'Label'
+  }
+}
+```
+</details>
 
 ## Development mode
 
