@@ -43,6 +43,7 @@
       </form>
     <% else %>
       <div class="flex items-center space-x-4 justify-center">
+        <%= link_to "Docs", "https://github.com/vitalyliber/Pusher", class: "btn btn-xs", target: "_blank" %>
         <% if mobile_access %>
           <%= link_to "Credentials", mobile_accesses_path, class: "btn btn-xs" %>
           <%= form_with url: session_path(:delete), method: :delete do %>
