@@ -1,0 +1,23 @@
+<%= form_with(model: mobile_access, class: "form-control w-full max-w-xs") do |form| %>
+  <div class="mb-4">
+    <%= form.label :fcm_project_id, class: "label" %>
+    <%= form.text_field :fcm_project_id, class: "input input-bordered w-full" %>
+    <% if mobile_access.errors[:fcm_project_id].any? %>
+      <div class="text-error text-sm mt-1">
+        <%= mobile_access.errors[:fcm_project_id].join(", ") %>
+      </div>
+    <% end %>
+  </div>
+  <div class="mb-4">
+    <%= form.label :fcm_json_key, class: "label" %>
+    <%= form.text_area :fcm_json_key, class: "textarea textarea-bordered w-full", rows: 12 %>
+    <% if mobile_access.errors[:fcm_json_key].any? %>
+      <div class="text-error text-sm mt-1">
+        <%= mobile_access.errors[:fcm_json_key].join(", ") %>
+      </div>
+    <% end %>
+  </div>
+  <div class="mt-6">
+    <%= form.submit "Save", class: "btn btn-primary w-full" %>
+  </div>
+<% end %>

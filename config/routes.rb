@@ -28,4 +28,5 @@ Rails.application.routes.draw do
     delete "remove_topic", on: :member
     post "add_topic", on: :member
   end
+  resources :mobile_accesses, except: [ :show, :destroy ]
 end
