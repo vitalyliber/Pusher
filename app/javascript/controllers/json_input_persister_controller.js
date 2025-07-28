@@ -35,22 +35,6 @@ export default class extends Controller {
     };
 
     this.editor = new JSONEditor(this.editorTarget, options);
-
-    const initialJson = {
-      notification: {
-        title: "Hey",
-        body: ":)",
-      },
-      data: {
-        key1: "value1",
-        key2: "value2",
-      },
-    };
-
-    if (!this.inputTarget.value) {
-      this.editor.set(initialJson);
-      this.inputTarget.value = JSON.stringify(initialJson);
-    }
   }
 
   save() {
@@ -67,6 +51,19 @@ export default class extends Controller {
       } catch (e) {
         console.error("Failed to parse saved JSON:", e);
       }
+    } else {
+      const initialJson = {
+        notification: {
+          title: "Hey",
+          body: ":)",
+        },
+        data: {
+          key1: "value1",
+          key2: "value2",
+        },
+      };
+      this.editor.set(initialJson);
+      this.inputTarget.value = JSON.stringify(initialJson);
     }
     this.editor.expandAll();
   }
