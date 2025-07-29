@@ -1,4 +1,4 @@
-<%= form_with(model: mobile_access, class: "form-control w-full max-w-xs") do |form| %>
+<%= form_with(model: mobile_access, class: "form-control w-full") do |form| %>
   <div class="mb-4">
     <%= form.label :fcm_project_id, class: "label" %>
     <%= form.text_field :fcm_project_id, class: "input input-bordered w-full" %>
@@ -18,6 +18,6 @@
     <% end %>
   </div>
   <div class="mt-6">
-    <%= form.submit "Save", class: "btn btn-primary w-full" %>
+    <%= form.submit "Save", class: "btn btn-primary w-full", data: { "turbo-confirm":  } %>
   </div>
 <% end %>
