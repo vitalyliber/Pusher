@@ -43,10 +43,10 @@
           <strong>Device info:</strong> <%= it.device_info %>
         </p>
         <p class="text-gray-700">
-          <strong>Created At:</strong> <%= it.created_at %>
+          <strong>Created At:</strong> <%= time_ago_in_words(it.created_at) %>
         </p>
         <p class="text-gray-700">
-          <strong>Updated At:</strong> <%= it.updated_at %>
+          <strong>Updated At:</strong> <%= time_ago_in_words(it.updated_at) %>
         </p>
       </div>
     <% end %>

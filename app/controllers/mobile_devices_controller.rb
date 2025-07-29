@@ -1,7 +1,27 @@
 class MobileDevicesController < ApplicationController
   def show
     @mobile_user = MobileUser.find_by(external_key: params[:id])
-    @mobile_devices = mobile_access.mobile_devices.where(external_key: params[:id])
+    @mobile_devices = mobile_access.mobile_devices.where(external_key: params[:id]).order(created_at: :desc)
+  end
+
+  def new
+    @mobile_device = MobileDevice.new
+  end
+
+  def create
+    permitted_params = params.require(:mobile_device).permit(:device_token, :user_info, :device_info, :external_key)
+
+    service = MobileDeviceService.new(
+      permitted_params[:device_token],
+      permitted_params[:user_info],
+      permitted_params[:device_info],
+      permitted_params[:external_key],
+      mobile_access
+    )
+    @result = service.create
+    @mobile_device = MobileDevice.new
+
+    redirect_to mobile_device_path(permitted_params[:external_key])
   end
 
   def stats

@@ -21,7 +21,7 @@ Rails.application.routes.draw do
   resources :notifications, only: [ :create ] do
     get "search_mobile_devices", on: :collection
   end
-  resources :mobile_devices, only: [ :show ] do
+  resources :mobile_devices, only: [ :new, :show, :create ] do
     get "stats", on: :collection
   end
   resources :mobile_users, only: [] do
