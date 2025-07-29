@@ -1,4 +1,5 @@
 mobile_access:
   app_name: "TestApp"
   server_token: valid_token
+  client_token: client_token
   fcm_json_key: '{"project_id":"xyz"}'

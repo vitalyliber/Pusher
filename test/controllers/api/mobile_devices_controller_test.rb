@@ -3,7 +3,7 @@ require "test_helper"
 class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @mobile_access = mobile_accesses(:mobile_access)
-    @valid_token = @mobile_access.server_token
+    @valid_token = @mobile_access.client_token
     @mobile_device = mobile_devices(:mobile_device)
   end
 
@@ -37,6 +37,8 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
           }
         })
 
+        assert_response :success
+
         authenticated_request(:post, api_mobile_devices_url, params: {
           mobile_device: {
             device_token: "0002",
@@ -45,6 +47,8 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
             external_key: "user_external_key"
           }
         })
+
+        assert_response :success
 
         # Change an external_key for existing mobile device
         authenticated_request(:post, api_mobile_devices_url, params: {
@@ -55,10 +59,11 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
             external_key: "new_user_external_key"
           }
         })
+
+        assert_response :success
       end
     end
     fcm_mock.verify
-    assert_response :success
   end
 
   # @TODO: Add tests for existing mobile device and user

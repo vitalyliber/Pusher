@@ -1,4 +1,4 @@
-class Api::NotificationsController < ApiController
+class Api::NotificationsController < ApiAdminController
   def create
     result = mobile_access.send_notification(
       data: notification_params[:data],
