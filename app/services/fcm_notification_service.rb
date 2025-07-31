@@ -1,6 +1,10 @@
 require "fcm"
 
 class FcmNotificationService
+  attr_reader :fcm
+  # delegate :recover_notification_key, :create_notification_key, :add, :remove, :send_notification, :batch_topic_subscription, :batch_topic_unsubscription, to: :fcm
+  delegate :get_instance_id_info, to: :fcm
+
   def initialize(service_account, project_id)
     @project_id = project_id
     parsed_service_account = JSON.parse(service_account) if service_account.is_a?(String)

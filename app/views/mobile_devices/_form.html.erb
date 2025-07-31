@@ -4,37 +4,21 @@
     <%= form.text_field :device_token, class: "input input-bordered w-full" %>
   </div>
   <div class="form-control">
-    <%= form.label :user_info, class: "label" %>
-    <%= form.text_area :user_info, class: "textarea textarea-bordered w-full", rows: 4 %>
-  </div>
-  <div class="form-control">
-    <%= form.label :device_info, class: "label" %>
-    <%= form.text_area :device_info, class: "textarea textarea-bordered w-full", rows: 4 %>
-  </div>
-  <div class="form-control">
     <%= form.label :external_key, class: "label" %>
     <%= form.text_field :external_key, class: "input input-bordered w-full" %>
   </div>
+  <details>
+    <summary>Optional fields</summary>
+    <div class="form-control">
+      <%= form.label :user_info, class: "label" %>
+      <%= form.text_field :user_info, class: "input input-bordered w-full" %>
+    </div>
+    <div class="form-control">
+      <%= form.label :device_info, class: "label" %>
+      <%= form.text_field :device_info, class: "input input-bordered w-full" %>
+    </div>
+  </details>
   <div class="form-control mt-6">
     <%= form.submit class: "btn btn-primary w-full" %>
   </div>
-<% end %>
-<% if @result %>
-  <h2 class="font-bold text-lg mb-4 mt-6">
-    Server Response:
-  </h2>
-  <pre class="bg-white p-4 rounded text-sm">
-    <code>
-      <%= JSON.pretty_generate(@result).strip %>
-    </code>
-  </pre>
-  <%= link_to "Clean", new_mobile_device_path, class: "btn btn-success mt-6" %>
-  <script>
-    setTimeout(function() {
-        window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: 'smooth'
-        });
-    }, 200);
-  </script>
 <% end %>

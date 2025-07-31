@@ -11,7 +11,16 @@ class MobileDeviceService
   end
 
   def create
-    # return { json: { errors: [ "Device token can't be blank" ] }, status: :bad_request } if @device_token.blank?
+    return { json: { errors: [ "Device token can't be blank" ] }, status: :bad_request } if @device_token.blank?
+
+    # Check the device token is valid
+    result = mobile_access.get_instance_id_info(@device_token)
+
+    if result[:status_code] != 200
+      Rails.logger.error "Error getting instance ID info for device token: #{@device_token}, status code: #{result[:status_code]}, error: #{result[:body]}"
+      return { json: { errors: [ "Invalid device token" ] }, status: 400 }
+    end
+
 
     mobile_device = MobileDevice.find_by(device_token:)
 

@@ -1,7 +1,7 @@
 class MobileDevicesController < ApplicationController
   def show
     @mobile_user = MobileUser.find_by(external_key: params[:id])
-    @mobile_devices = mobile_access.mobile_devices.where(external_key: params[:id]).order(created_at: :desc)
+    @mobile_devices = mobile_access.mobile_devices.where(external_key: params[:id]).order(updated_at: :desc)
   end
 
   def new
@@ -21,7 +21,13 @@ class MobileDevicesController < ApplicationController
     @result = service.create
     @mobile_device = MobileDevice.new
 
-    redirect_to mobile_device_path(permitted_params[:external_key])
+    if @result[:status] == 200
+      flash[:notice] = "Mobile device created successfully."
+      redirect_to mobile_device_path(permitted_params[:external_key])
+    else
+      flash[:alert] = @result[:json][:errors].join(", ")
+      redirect_to new_mobile_device_path
+    end
   end
 
   def stats

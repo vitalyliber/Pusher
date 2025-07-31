@@ -4,6 +4,8 @@ class MobileAccess < ApplicationRecord
   validates_presence_of :app_name
   validates_uniqueness_of :app_name
 
+  delegate :get_instance_id_info, to: :notification_service
+
   has_many :mobile_devices
 
   def send_notification(data:, topic: nil, external_key: nil)
@@ -15,7 +17,7 @@ class MobileAccess < ApplicationRecord
   end
 
   def notification_service
-    FcmNotificationService.new(fcm_json_key, fcm_project_id)
+    @_notification_service ||= FcmNotificationService.new(fcm_json_key, fcm_project_id)
   end
 
   private
