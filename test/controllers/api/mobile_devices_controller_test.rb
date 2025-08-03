@@ -26,12 +26,7 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     fcm_mock.expect(:add, { body: "{}" }, [ String, nil, nil, Array ])
     fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0002" ] ])
 
-    # Third call
-    fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
-    fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
-    fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
-
-    assert_difference({ "MobileDevice.count" => 2, "MobileUser.count" => 2 }) do
+    assert_difference({ "MobileDevice.count" => 2, "MobileUser.count" => 1 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           mobile_device: {
@@ -54,25 +49,34 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
         })
 
         assert_response :success
+      end
+    end
+    fcm_mock.verify
+  end
 
-        # Change an external_key for existing mobile device
+  # Need to ensure that we attach topics and update device tokens in device group for new mobile device for existing mobile user
+  test "change an external_key for existing mobile device" do
+    fcm_mock = Minitest::Mock.new
+
+    fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
+    fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
+
+    assert_difference({ "MobileDevice.count" => 0, "MobileUser.count" => 1 }) do
+      FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           mobile_device: {
-            device_token: "0002",
+            device_token: @mobile_device.device_token,
             user_info: "New User Info",
             device_info: "New Device Info",
-            external_key: "new_user_external_key"
+            external_key: "user_external_key_changed"
           }
         })
 
         assert_response :success
       end
     end
-    fcm_mock.verify
   end
-
-  # @TODO: Add tests for existing mobile device and user
-  # Need to ensure that we attach topics and update device tokens in device group for new mobile device for existing mobile user
 
   test "should return existing mobile device and user" do
     fcm_mock = Minitest::Mock.new
