@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  device_group_token: MyText
+  device_group_token: device_group_token_one
   topics: ["general", "topic1"]
   external_key: user123
   mobile_access: mobile_access
 
 two:
-  device_group_token: MyText
+  device_group_token: device_group_token_twp
   topics: ["general", "topic1"]
   external_key: user321
   mobile_access: mobile_access

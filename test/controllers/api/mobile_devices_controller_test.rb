@@ -11,22 +11,15 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     send(method, path, params: params, headers: { "Authorization" => "Bearer #{@valid_token}" })
   end
 
-  test "should create mobile device" do
+  test "should create mobile device and create a notification key" do
     fcm_mock = Minitest::Mock.new
 
-    # Firtst call
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
     fcm_mock.expect(:batch_topic_subscription, true, [ "general", Array ])
     fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
     fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0001" ] ])
 
-    # Second call
-    fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
-    fcm_mock.expect(:batch_topic_subscription, true, [ "general", Array ])
-    fcm_mock.expect(:add, { body: "{}" }, [ String, nil, nil, Array ])
-    fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0002" ] ])
-
-    assert_difference({ "MobileDevice.count" => 2, "MobileUser.count" => 1 }) do
+    assert_difference({ "MobileDevice.count" => 1, "MobileUser.count" => 1 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           mobile_device: {
@@ -38,13 +31,29 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
         })
 
         assert_response :success
+      end
+    end
+    fcm_mock.verify
+  end
 
+  test "should create mobile device and add device token to device group" do
+    fcm_mock = Minitest::Mock.new
+    new_device_token = "0002"
+
+    fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ new_device_token ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "general", [ new_device_token ] ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "topic1", [ new_device_token ] ])
+    fcm_mock.expect(:add, { body: "{}" }, [ "user123", nil, "device_group_token_one", [ @mobile_device.device_token, new_device_token ] ])
+    fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0002" ] ])
+
+    assert_difference({ "MobileDevice.count" => 1, "MobileUser.count" => 0 }) do
+      FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           mobile_device: {
-            device_token: "0002",
+            device_token: new_device_token,
             user_info: "New User Info",
             device_info: "New Device Info",
-            external_key: "user_external_key"
+            external_key: @mobile_device.external_key
           }
         })
 
@@ -76,6 +85,8 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
         assert_response :success
       end
     end
+
+    fcm_mock.verify
   end
 
   test "should return existing mobile device and user" do
