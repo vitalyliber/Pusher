@@ -122,6 +122,25 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     assert_includes json_response["errors"], "Device token can't be blank"
   end
 
+  test "should add the unregistered topic and remove the mobile device if it exists" do
+    fcm_mock = Minitest::Mock.new
+    fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "unregistered", [ @mobile_device.device_token ] ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "general", [ @mobile_device.device_token ] ])
+
+    FCM.stub(:new, fcm_mock) do
+      assert_difference({ "MobileDevice.count" => -1, "MobileUser.count" => 0 }) do
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          mobile_device: {
+            device_token: @mobile_device.device_token,
+            external_key: nil
+          }
+        })
+      end
+      assert_response :success
+    end
+  end
+
   test "should destroy mobile device" do
     fcm_mock = Minitest::Mock.new
 

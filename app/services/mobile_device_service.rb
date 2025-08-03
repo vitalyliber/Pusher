@@ -23,6 +23,7 @@ class MobileDeviceService
 
     if external_key.blank?
       mobile_access.subscribe_to_basic_topics(device_token)
+      MobileDevice.find_by(device_token:)&.delete
 
       return { json: { messages: [ "Subscribed to the 'unregistered' and 'general' topics. A mobile device is not created because an external_key is empty." ] }, status: 200 }
     end
