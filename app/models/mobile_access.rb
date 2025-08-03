@@ -20,6 +20,13 @@ class MobileAccess < ApplicationRecord
     @_notification_service ||= FcmNotificationService.new(fcm_json_key, fcm_project_id)
   end
 
+  def subscribe_to_basic_topics(device_token)
+    [ "unregistered", "general" ].each do |topic|
+      Rails.logger.error "Subscribing to topic: #{topic} with device token: #{device_token}"
+      notification_service.batch_topic_subscription(topic, [ device_token ])
+    end
+  end
+
   private
 
   def generate_server_token

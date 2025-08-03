@@ -11,16 +11,21 @@ class MobileDeviceService
   end
 
   def create
-    return { json: { errors: [ "Device token can't be blank" ] }, status: :bad_request } if @device_token.blank?
+    return { json: { errors: [ "Device token can't be blank" ] }, status: :bad_request } if device_token.blank?
 
     # Check the device token is valid
-    result = mobile_access.get_instance_id_info(@device_token)
+    result = mobile_access.get_instance_id_info(device_token)
 
     if result[:status_code] != 200
-      Rails.logger.error "Error getting instance ID info for device token: #{@device_token}, status code: #{result[:status_code]}, error: #{result[:body]}"
+      Rails.logger.error "Error getting instance ID info for device token: #{device_token}, status code: #{result[:status_code]}, error: #{result[:body]}"
       return { json: { errors: [ "Invalid device token" ] }, status: 400 }
     end
 
+    if external_key.blank?
+      mobile_access.subscribe_to_basic_topics(device_token)
+
+      return { json: { messages: [ "Subscribed to the 'unregistered' and 'general' topics. A mobile device is not created because an external_key is empty." ] }, status: 200 }
+    end
 
     mobile_device = MobileDevice.find_by(device_token:)
 
@@ -50,6 +55,7 @@ class MobileDeviceService
 
     if mobile_device.save
       process_mobile_user(mobile_device)
+      mobile_device.unsubscribe_from_unregistered_topic
 
       { json: {} }
     else

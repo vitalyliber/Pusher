@@ -18,4 +18,9 @@ class MobileDevice < ApplicationRecord
       mobile_access.notification_service.batch_topic_unsubscription(topic, [ device_token ])
     end
   end
+
+  def unsubscribe_from_unregistered_topic
+    Rails.logger.error "Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
+    mobile_access.notification_service.batch_topic_unsubscription("unregistered", [ device_token ])
+  end
 end

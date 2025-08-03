@@ -16,13 +16,15 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
     # Firtst call
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
-    fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "general", Array ])
     fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
+    fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0001" ] ])
 
     # Second call
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
-    fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "general", Array ])
     fcm_mock.expect(:add, { body: "{}" }, [ String, nil, nil, Array ])
+    fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0002" ] ])
 
     # Third call
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
