@@ -28,28 +28,7 @@
     <% end %>
   <% end %>
   <div class="space-y-4 mt-20">
-    <% @mobile_devices.each do %>
-      <div class="mb-4 p-4 border rounded-lg bg-white shadow">
-        <p class="text-gray-700">
-          <strong>External Key:</strong> <%= it.external_key %>
-        </p>
-        <p class="text-gray-700">
-          <strong>Token:</strong> <%= it.device_token %>
-        </p>
-        <p class="text-gray-700">
-          <strong>User info:</strong> <%= it.user_info %>
-        </p>
-        <p class="text-gray-700">
-          <strong>Device info:</strong> <%= it.device_info %>
-        </p>
-        <p class="text-gray-700">
-          <strong>Created At:</strong> <%= time_ago_in_words(it.created_at) %>
-        </p>
-        <p class="text-gray-700">
-          <strong>Updated At:</strong> <%= time_ago_in_words(it.updated_at) %>
-        </p>
-      </div>
-    <% end %>
+    <%= render @mobile_devices, partial: "mobile_devices/mobile_device" %>
   </div>
   <% unless @mobile_devices.any? %>
     <p class="text-gray-500 text-center mt-4">

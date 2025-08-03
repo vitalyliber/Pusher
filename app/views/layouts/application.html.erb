@@ -46,7 +46,7 @@
         <%= link_to "Docs", "https://github.com/vitalyliber/Pusher", class: "btn btn-xs", target: "_blank" %>
         <% if mobile_access %>
           <%= link_to "New mobile device", new_mobile_device_path, class: "btn btn-xs" %>
-          <%= link_to "Credentials", mobile_accesses_path, class: "btn btn-xs" %>
+          <%= link_to "Credentials", edit_mobile_access_path(mobile_access), class: "btn btn-xs" %>
           <%= form_with url: session_path(:delete), method: :delete do %>
             <%= submit_tag "Logout", class: "btn btn-xs btn-soft btn-secondary", data: { "turbo-confirm": "Are you sure?" } %>
           <% end %>

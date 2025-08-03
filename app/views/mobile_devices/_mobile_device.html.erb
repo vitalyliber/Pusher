@@ -1,0 +1,20 @@
+<div class="mb-4 p-4 border rounded-lg bg-white shadow">
+  <p class="text-gray-700">
+    <strong>External Key:</strong> <%= mobile_device.external_key %>
+  </p>
+  <p class="text-gray-700">
+    <strong>Token:</strong> <%= mobile_device.device_token %>
+  </p>
+  <p class="text-gray-700">
+    <strong>User info:</strong> <%= mobile_device.user_info %>
+  </p>
+  <p class="text-gray-700">
+    <strong>Device info:</strong> <%= mobile_device.device_info %>
+  </p>
+  <p class="text-gray-700">
+    <strong>Created At:</strong> <%= time_ago_in_words(mobile_device.created_at) %>
+  </p>
+  <p class="text-gray-700">
+    <strong>Updated At:</strong> <%= time_ago_in_words(mobile_device.updated_at) %>
+  </p>
+</div>

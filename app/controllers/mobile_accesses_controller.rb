@@ -1,13 +1,13 @@
 class MobileAccessesController < ApplicationController
   def index
-    if mobile_access.fcm_json_key.blank? || mobile_access.fcm_project_id.blank?
-      redirect_to edit_mobile_access_path(mobile_access), alert: "Please configure FCM settings."
-    else
-      redirect_to edit_mobile_access_path(mobile_access)
-    end
+    @mobile_devices = mobile_access.mobile_devices.includes(:mobile_user).order(updated_at: :desc)
   end
 
   def edit
+    if mobile_access.fcm_json_key.blank? || mobile_access.fcm_project_id.blank?
+      flash[:alert] = "Please configure FCM settings."
+    end
+
     @mobile_access = mobile_access
   end
 
