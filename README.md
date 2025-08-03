@@ -27,12 +27,20 @@ Params:
     "device_token": "xxx",
     "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
     "device_info": "iOS/Andoid, Samsung Galaxy s25",
-    "external_key": 123
+    "external_key": 123 // Leave it empty to subscribe to general and unregistered topics
   }
 }
 ```
 
 Response status: `200`
+
+**Leave an external key is empty to subscribe to general and unregistered topics**
+
+It can be an empty string, null, or undefined.
+
+Notice that in this case, you will not create any records on the server side.
+
+Pusher creates a mobile device when it receives the device token with an external key and removes the "unregistered" topic.
 
 ### Remove mobile device
 
