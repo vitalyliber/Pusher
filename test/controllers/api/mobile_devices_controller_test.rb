@@ -144,9 +144,11 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   test "should destroy mobile device" do
     fcm_mock = Minitest::Mock.new
 
-    fcm_mock.expect(:remove, { body: "{}" }, [ String, nil, String, Array ])
-    fcm_mock.expect(:batch_topic_unsubscription, true, [ String, Array ])
-    fcm_mock.expect(:batch_topic_unsubscription, true, [ String, Array ])
+    fcm_mock.expect(:remove, { body: "{}" }, [ @mobile_device.external_key, nil, @mobile_device.mobile_user.device_group_token, [ @mobile_device.device_token ] ])
+    fcm_mock.expect(:batch_topic_unsubscription, true, [ "general", [ @mobile_device.device_token ] ])
+    fcm_mock.expect(:batch_topic_unsubscription, true, [ "topic1", [ @mobile_device.device_token ] ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "unregistered", [ @mobile_device.device_token ] ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "general", [ @mobile_device.device_token ] ])
 
     assert_difference("MobileDevice.count", -1) do
       FCM.stub(:new, fcm_mock) do
