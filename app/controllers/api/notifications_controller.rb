@@ -1,9 +1,9 @@
 class Api::NotificationsController < ApiAdminController
   def create
     result = mobile_access.send_notification(
-      data: notification_params[:data],
-      topic: notification_params[:topic],
-      external_key: notification_params[:external_key],
+      data: params[:payload].to_unsafe_h,
+      topic: params[:topic],
+      external_key: params[:external_key],
     )
 
     if result[:success]
@@ -11,11 +11,5 @@ class Api::NotificationsController < ApiAdminController
     else
       render json: { status: "error", error: result[:error] }, status: :unprocessable_entity
     end
-  end
-
-  private
-
-  def notification_params
-    params.expect(notification: [ :data, :topic, :external_key ])
   end
 end

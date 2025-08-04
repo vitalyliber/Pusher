@@ -21,17 +21,13 @@ class Api::NotificationsControllerTest < ActionDispatch::IntegrationTest
 
     FCM.stub(:new, fcm_mock) do
       authenticated_request(:post, api_notifications_path, params: {
-        notification: {
-          data: { message: "Test notification" },
-          topic: "test_topic"
-        }
+        payload: { message: "Test notification" },
+        topic: "test_topic"
       })
 
       authenticated_request(:post, api_notifications_path, params: {
-        notification: {
-          data: { message: "Test notification" },
-          external_key: "user123"
-        }
+        payload: { message: "Test notification" },
+        external_key: "user123"
       })
     end
 

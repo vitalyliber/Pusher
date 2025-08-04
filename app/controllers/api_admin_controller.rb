@@ -1,4 +1,5 @@
 class ApiAdminController < ApplicationController
+  skip_before_action :verify_authenticity_token
   before_action :restrict_access
 
   def restrict_access

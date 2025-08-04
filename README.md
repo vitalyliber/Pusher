@@ -59,51 +59,42 @@ Params:
 
 ```json
 {
-  "notification": {
-    "data": {}, // You can find the data example below
-    "external_key": "user123",
-    "topic": "test_topic" // Don't use the default "general" topic for test purposes
-  }
+  "payload": {
+    "notification": {
+      "title": "Test title",
+      "body": "Test message"
+    },
+    "data": {
+      "key1": "value1"
+    },
+    "android": {
+      "priority": "high",
+      "notification": {
+        "channel_id": "high_importance_channel",
+        "sound": "default",
+        "icon": "ic_notification",
+        "color": "#FF0000"
+      }
+    },
+    "apns": {
+      "headers": {
+        "apns-priority": "10"
+      },
+      "payload": {
+        "aps": {
+          "badge": 2,
+          "sound": "default",
+          "content-available": 1
+        }
+      }
+    }
+  },
+  "external_key": "35ccc1b96a2de88cbc33d824e596d7def62753ab145ecb07cf8e4391ddbc28a7",
+  "topic": "test_topic" // Don't use the default "general" topic for test purposes
 }
 ```
 
 Response status: `200`
-
-### Data example
-
-<details>
-  <summary>Open the data example</summary>
-  
-```js
-{
-  'data': {
-    payload: {
-      data: {
-        id: 1
-      }
-    }
-  },
-  'notification': {
-    title: notification.title_th,
-    body: notification.body_th
-  },
-  'android': {
-    priority: 'high'
-  },
-  'apns': {
-    payload: {
-      aps: {
-        sound: "default",
-        category: "category"
-      }
-    }
-  },
-  'fcm_options': {
-    analytics_label: 'Label'
-  }
-}
-```
-</details>
 
 ## Development mode
 
