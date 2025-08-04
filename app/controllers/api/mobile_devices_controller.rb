@@ -1,12 +1,10 @@
 class Api::MobileDevicesController < ApiClientController
   def create
-    permitted_params = params.expect(mobile_device: [ :device_token, :user_info, :device_info, :external_key ])
-
     service = MobileDeviceService.new(
-      permitted_params[:device_token],
-      permitted_params[:user_info],
-      permitted_params[:device_info],
-      permitted_params[:external_key],
+      params[:device_token],
+      params[:user_info],
+      params[:device_info],
+      params[:external_key],
       mobile_access
     )
     result = service.create

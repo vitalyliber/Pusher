@@ -22,12 +22,10 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     assert_difference({ "MobileDevice.count" => 1, "MobileUser.count" => 1 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
-          mobile_device: {
-            device_token: "0001",
-            user_info: "New User Info",
-            device_info: "New Device Info",
-            external_key: "user_external_key"
-          }
+          device_token: "0001",
+          user_info: "New User Info",
+          device_info: "New Device Info",
+          external_key: "user_external_key"
         })
 
         assert_response :success
@@ -49,12 +47,10 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     assert_difference({ "MobileDevice.count" => 1, "MobileUser.count" => 0 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
-          mobile_device: {
-            device_token: new_device_token,
-            user_info: "New User Info",
-            device_info: "New Device Info",
-            external_key: @mobile_device.external_key
-          }
+          device_token: new_device_token,
+          user_info: "New User Info",
+          device_info: "New Device Info",
+          external_key: @mobile_device.external_key
         })
 
         assert_response :success
@@ -74,12 +70,10 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     assert_difference({ "MobileDevice.count" => 0, "MobileUser.count" => 1 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
-          mobile_device: {
-            device_token: @mobile_device.device_token,
-            user_info: "New User Info",
-            device_info: "New Device Info",
-            external_key: "user_external_key_changed"
-          }
+          device_token: @mobile_device.device_token,
+          user_info: "New User Info",
+          device_info: "New Device Info",
+          external_key: "user_external_key_changed"
         })
 
         assert_response :success
@@ -95,25 +89,21 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
     FCM.stub(:new, fcm_mock) do
       authenticated_request(:post, api_mobile_devices_url, params: {
-      mobile_device: {
         device_token: @mobile_device.device_token,
         external_key: @mobile_device.external_key
-      }
-    })
-    assert_response :success
-    json_response = JSON.parse(response.body)
-    assert_equal "12345", json_response["mobile_device"]["device_token"]
-    assert_equal @mobile_device.external_key, json_response["mobile_device"]["external_key"]
+      })
+      assert_response :success
+      json_response = JSON.parse(response.body)
+      assert_equal "12345", json_response["mobile_device"]["device_token"]
+      assert_equal @mobile_device.external_key, json_response["mobile_device"]["external_key"]
     end
   end
 
   test "should not create mobile device with invalid params" do
     assert_no_difference("MobileDevice.count") do
       authenticated_request(:post, api_mobile_devices_url, params: {
-        mobile_device: {
-          device_token: nil,
-          external_key: "user_external_key"
-        }
+        device_token: nil,
+        external_key: "user_external_key"
       })
     end
     assert_response :bad_request
@@ -131,10 +121,8 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     FCM.stub(:new, fcm_mock) do
       assert_difference({ "MobileDevice.count" => -1, "MobileUser.count" => 0 }) do
         authenticated_request(:post, api_mobile_devices_url, params: {
-          mobile_device: {
-            device_token: @mobile_device.device_token,
-            external_key: nil
-          }
+          device_token: @mobile_device.device_token,
+          external_key: nil
         })
       end
       assert_response :success

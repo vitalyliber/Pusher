@@ -23,12 +23,10 @@ Params:
 
 ```json
 {
-  "mobile_device": {
-    "device_token": "xxx",
-    "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
-    "device_info": "iOS/Andoid, Samsung Galaxy s25",
-    "external_key": 123 // Leave it empty to subscribe to general and unregistered topics
-  }
+  "device_token": "xxx",
+  "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
+  "device_info": "iOS/Andoid, Samsung Galaxy s25",
+  "external_key": 123 // Leave it empty to subscribe to general and unregistered topics
 }
 ```
 
