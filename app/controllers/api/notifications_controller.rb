@@ -1,5 +1,7 @@
 class Api::NotificationsController < ApiAdminController
   def create
+    return render json: { errors: [ "The notification can be sent only on a topic or an external key, not both." ] }, status: :bad_request if params[:external_key].present? && params[:topic].present?
+
     result = mobile_access.send_notification(
       data: params[:payload].to_unsafe_h,
       topic: params[:topic],

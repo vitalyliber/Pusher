@@ -34,4 +34,15 @@ class Api::NotificationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
     assert_equal "success", JSON.parse(response.body)["status"]
   end
+
+  test "should return error when both topic and external_key are present" do
+    authenticated_request(:post, api_notifications_path, params: {
+      payload: { message: "Test notification" },
+      topic: "test_topic",
+      external_key: "user123"
+    })
+
+    assert_response :bad_request
+    assert_equal "The notification can be sent only on a topic or an external key, not both.", JSON.parse(response.body)["errors"].first
+  end
 end
