@@ -1,10 +1,11 @@
 <h1 class="text-2xl mb-4 text-center text-black">
-  <%= @mobile_devices.count %> mobile devices for the
+  <%= @pagy.count %> mobile devices for the
   <span class="text-blue-900 font-bold">
     <%= mobile_access.app_name %>
   </span>
   app
 </h1>
-<div class="space-y-4 mt-20">
+<div class="space-y-4 mt-20 mb-10">
   <%= render @mobile_devices, partial: "mobile_devices/mobile_device" %>
 </div>
+<%== pagy_nav(@pagy) %>
