@@ -70,3 +70,4 @@ end
 
 gem "honeybadger", "~> 6.0"
 gem "pagy", "~> 9.3"
+gem "pg_search"

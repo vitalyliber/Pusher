@@ -5,6 +5,13 @@
   </span>
   app
 </h1>
+<%= form_with url: mobile_accesses_path, method: :get, local: true, class: "form-control mt-16 flex justify-center" do %>
+  <div class="flex gap-2 items-center">
+    <%= text_field_tag :query, params[:query], placeholder: "Search by info fields...", class: "input input-bordered w-full md:w-[250px]" %>
+    <%= submit_tag "Search", name: nil, class: "ml-2 btn btn-primary" %>
+    <%= link_to "Clear", mobile_accesses_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>
 <div class="space-y-4 mt-20 mb-10">
   <%= render @mobile_devices, partial: "mobile_devices/mobile_device" %>
 </div>

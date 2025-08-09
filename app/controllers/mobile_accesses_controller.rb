@@ -1,6 +1,10 @@
 class MobileAccessesController < ApplicationController
   def index
-    @pagy, @mobile_devices = pagy(mobile_access.mobile_devices.includes(:mobile_user).order(updated_at: :desc))
+    devices = mobile_access.mobile_devices.includes(:mobile_user)
+    devices = devices.search_by_info(params[:query]) if params[:query].present?
+    devices = devices.order(updated_at: :desc)
+
+    @pagy, @mobile_devices = pagy(devices)
   end
 
   def edit
