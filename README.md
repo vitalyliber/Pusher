@@ -153,3 +153,25 @@ _Rails console_
 ```bash
 kamal app exec -i 'bin/rails console'
 ```
+
+_Boot an accessory_
+
+```bash
+kamal accessory boot backup
+```
+
+_Update accessory settings_
+
+```bash
+kamal accessory restart backup
+```
+
+```bash
+kamal accessory reboot backup
+```
+
+_See accessory logs_
+
+```bash
+kamal accessory logs backup
+```

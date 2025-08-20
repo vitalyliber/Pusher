@@ -132,3 +132,18 @@ accessories:
       - config/init.sql:/docker-entrypoint-initdb.d/setup.sql
     directories:
       - data:/var/lib/postgresql/data
+  backup:
+    image: kartoza/pg-backup:17-3.5--v2025.03.26
+    roles:
+      - web
+    env:
+      secret:
+        - POSTGRES_DB
+        - POSTGRES_USER
+        - POSTGRES_PASS
+      clear:
+        POSTGRES_HOST: pusher-db
+        POSTGRES_PORT: 5432
+        CRON_SCHEDULE: "0 0 * * *"
+    directories:
+      - backups:/backups
