@@ -5,7 +5,7 @@
 ## Endpoints
 
 - [POST /api/mobile_devices](#create-mobile-device)
-- [DELETE /api/mobile_device/:push_token](#remove-mobile-device)
+- [DELETE /api/mobile_devices/:push_token](#remove-mobile-device)
 - [POST /api/push_notifications](#create-push-notifications)
 
 Auth headers:
@@ -44,7 +44,7 @@ Pusher creates a mobile device when it receives the device token with an externa
 
 _Run this method when the user logout._
 
-DELETE `/api/mobile_device/:push_token`
+DELETE `/api/mobile_devices/:push_token`
 
 Response status: `200`
 
