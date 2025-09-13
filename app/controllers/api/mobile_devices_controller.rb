@@ -1,13 +1,19 @@
 class Api::MobileDevicesController < ApiClientController
   def create
-    service = MobileDeviceService.new(
-      params[:device_token],
-      params[:user_info],
-      params[:device_info],
-      params[:external_key],
-      mobile_access
-    )
-    result = service.create
+    result = nil
+
+    if params[:push_provider] == "huawei"
+    else
+      service = MobileDeviceService.new(
+        params[:device_token],
+        params[:user_info],
+        params[:device_info],
+        params[:external_key],
+        mobile_access
+      )
+      result = service.create
+    end
+
     render json: result[:json], status: result[:status]
   end
 

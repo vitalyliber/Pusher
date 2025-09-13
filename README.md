@@ -23,6 +23,7 @@ Params:
 
 ```json
 {
+  "push_provider": "firebase", // huawei
   "device_token": "xxx",
   "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
   "device_info": "iOS/Andoid, Samsung Galaxy s25",
@@ -39,6 +40,11 @@ It can be an empty string, null, or undefined.
 Notice that in this case, you will not create any records on the server side.
 
 Pusher creates a mobile device when it receives the device token with an external key and removes the "unregistered" topic.
+
+**Push provider**
+
+- firebase: Firebase Cloud Messages
+- huawei: Huawei Push Kit
 
 ### Remove mobile device
 
