@@ -27,6 +27,10 @@ class MobileAccess < ApplicationRecord
     end
   end
 
+  def huawei_notification_service
+    @_huawei_notification_service ||= HuaweiNotificationService.new(huawei_client_id, huawei_client_secret)
+  end
+
   private
 
   def generate_server_token

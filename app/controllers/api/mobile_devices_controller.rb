@@ -3,6 +3,14 @@ class Api::MobileDevicesController < ApiClientController
     result = nil
 
     if params[:push_provider] == "huawei"
+      service = HuaweiMobileDeviceService.new(
+        params[:device_token],
+        params[:user_info],
+        params[:device_info],
+        params[:external_key],
+        mobile_access
+      )
+      result = service.create
     else
       service = MobileDeviceService.new(
         params[:device_token],
