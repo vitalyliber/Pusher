@@ -13,10 +13,10 @@ class MobileDevicesController < ApplicationController
 
     if params[:push_provider] == "huawei"
       service = HuaweiMobileDeviceService.new(
-        params[:device_token],
-        params[:user_info],
-        params[:device_info],
-        params[:external_key],
+        permitted_params[:device_token],
+        permitted_params[:user_info],
+        permitted_params[:device_info],
+        permitted_params[:external_key],
         mobile_access
       )
     else
