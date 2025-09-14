@@ -1,5 +1,5 @@
 # app/services/mobile_device_service.rb
-class HuaweiMobileDeviceService
+class HuaweiMobileDeviceService < BaseMobileDeviceService
   attr_reader :device_token, :user_info, :device_info, :external_key, :mobile_access
 
   def initialize(device_token, user_info, device_info, external_key, mobile_access)
@@ -57,7 +57,7 @@ class HuaweiMobileDeviceService
 
     if mobile_device.save
       process_mobile_user(mobile_device)
-      mobile_device.unsubscribe_from_unregistered_topic
+      unsubscribe_from_unregistered_topic(mobile_device)
 
       { json: {} }
     else
@@ -73,16 +73,27 @@ class HuaweiMobileDeviceService
       external_key:
     )
 
-    if mobile_user
-      mobile_user.update_device_tokens_in_device_group
-    else
+    unless mobile_user
       mobile_user = MobileUser.create(
         mobile_access:,
         external_key:
       )
-      mobile_user.create_device_group_token
     end
 
-    mobile_device.subscribe_to_topics
+    subscribe_to_topics(mobile_device)
+  end
+
+  def subscribe_to_topics(mobile_device)
+    device_token = mobile_device.device_token
+    mobile_device.mobile_user.topics.each do |topic|
+      Rails.logger.error "[Huawei] Subscribing the topic: #{topic} with device token: #{device_token}"
+      mobile_access.huawei_notification_service.subscribe_to_topic(topic, [ device_token ])
+    end
+  end
+
+  def unsubscribe_from_unregistered_topic(mobile_device)
+    device_token = mobile_device.device_token
+    Rails.logger.error "[Huawei] Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
+    mobile_access.huawei_notification_service.unsubscribe_from_topic(UNREGISTERED_TOPIC, [ device_token ])
   end
 end

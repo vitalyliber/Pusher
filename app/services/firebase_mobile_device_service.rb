@@ -1,5 +1,5 @@
 # app/services/mobile_device_service.rb
-class FirebaseMobileDeviceService
+class FirebaseMobileDeviceService < BaseMobileDeviceService
   attr_reader :device_token, :user_info, :device_info, :external_key, :mobile_access
 
   def initialize(device_token, user_info, device_info, external_key, mobile_access)
@@ -88,14 +88,14 @@ class FirebaseMobileDeviceService
   def subscribe_to_topics(mobile_device)
     device_token = mobile_device.device_token
     mobile_device.mobile_user.topics.each do |topic|
-      Rails.logger.error "Subscribing to topic: #{topic} with device token: #{device_token}"
+      Rails.logger.error "[Firebase] Subscribing to topic: #{topic} with device token: #{device_token}"
       mobile_access.notification_service.batch_topic_subscription(topic, [ device_token ])
     end
   end
 
   def unsubscribe_from_unregistered_topic(mobile_device)
     device_token = mobile_device.device_token
-    Rails.logger.error "Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
-    mobile_access.notification_service.batch_topic_unsubscription("unregistered", [ device_token ])
+    Rails.logger.error "[Firebase] Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
+    mobile_access.notification_service.batch_topic_unsubscription(UNREGISTERED_TOPIC, [ device_token ])
   end
 end

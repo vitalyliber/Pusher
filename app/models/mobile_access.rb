@@ -21,7 +21,7 @@ class MobileAccess < ApplicationRecord
   end
 
   def subscribe_to_basic_topics(device_token, push_provider)
-    [ "unregistered", "general" ].each do |topic|
+    [ BaseMobileDeviceService::UNREGISTERED_TOPIC, BaseMobileDeviceService::GENERAL_TOPIC ].each do |topic|
       Rails.logger.error "Subscribing to topic: #{topic} with device token: #{device_token}"
       notification_service.batch_topic_subscription(topic, [ device_token ]) if push_provider == "firebase"
       huawei_notification_service.subscribe_to_topic(topic, [ device_token ]) if push_provider == "huawei"
