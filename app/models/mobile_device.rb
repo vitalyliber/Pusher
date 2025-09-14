@@ -13,24 +13,4 @@ class MobileDevice < ApplicationRecord
                   using: {
                     tsearch: { prefix: true, dictionary: "english" }
                   }
-
-  def subscribe_to_topics
-    mobile_user.topics.each do |topic|
-      Rails.logger.error "Subscribing to topic: #{topic} with device token: #{device_token}"
-      mobile_access.notification_service.batch_topic_subscription(topic, [ device_token ])
-    end
-  end
-
-  def unsubscribe_from_topics
-    mobile_user.topics.each do |topic|
-      Rails.logger.info "Unsubscribing from topic: #{topic} with device token: #{device_token}"
-
-      mobile_access.notification_service.batch_topic_unsubscription(topic, [ device_token ])
-    end
-  end
-
-  def unsubscribe_from_unregistered_topic
-    Rails.logger.error "Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
-    mobile_access.notification_service.batch_topic_unsubscription("unregistered", [ device_token ])
-  end
 end

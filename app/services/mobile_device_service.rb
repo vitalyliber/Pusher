@@ -56,7 +56,7 @@ class MobileDeviceService
 
     if mobile_device.save
       process_mobile_user(mobile_device)
-      mobile_device.unsubscribe_from_unregistered_topic
+      unsubscribe_from_unregistered_topic(mobile_device)
 
       { json: {} }
     else
@@ -82,6 +82,20 @@ class MobileDeviceService
       mobile_user.create_device_group_token
     end
 
-    mobile_device.subscribe_to_topics
+    subscribe_to_topics(mobile_device)
+  end
+
+  def subscribe_to_topics(mobile_device)
+    device_token = mobile_device.device_token
+    mobile_device.mobile_user.topics.each do |topic|
+      Rails.logger.error "Subscribing to topic: #{topic} with device token: #{device_token}"
+      mobile_access.notification_service.batch_topic_subscription(topic, [ device_token ])
+    end
+  end
+
+  def unsubscribe_from_unregistered_topic(mobile_device)
+    device_token = mobile_device.device_token
+    Rails.logger.error "Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
+    mobile_access.notification_service.batch_topic_unsubscription("unregistered", [ device_token ])
   end
 end

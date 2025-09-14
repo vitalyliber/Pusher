@@ -31,10 +31,21 @@ class Api::MobileDevicesController < ApiClientController
     return render json: { errors: [ "Mobile device not found" ] }, status: :not_found unless mobile_device
 
     mobile_device.mobile_user.remove_device_token_from_device_group([ mobile_device.device_token ])
-    mobile_device.unsubscribe_from_topics
+    unsubscribe_from_topics(mobile_device)
     mobile_device.delete
     mobile_access.subscribe_to_basic_topics(params[:id])
 
     render json: {}
+  end
+
+  private
+
+  def unsubscribe_from_topics(mobile_device)
+    device_token = mobile_device.device_token
+    mobile_device.mobile_user.topics.each do |topic|
+      Rails.logger.info "Unsubscribing from topic: #{topic} with device token: #{device_token}"
+
+      mobile_access.notification_service.batch_topic_unsubscription(topic, [ device_token ])
+    end
   end
 end
