@@ -31,8 +31,8 @@ class Api::MobileDevicesController < ApiClientController
 
     mobile_device.mobile_user.remove_device_token_from_device_group([ mobile_device.device_token ])
     unsubscribe_from_topics(mobile_device)
+    mobile_access.subscribe_to_basic_topics(params[:id], mobile_device.push_provider)
     mobile_device.delete
-    mobile_access.subscribe_to_basic_topics(params[:id])
 
     render json: {}
   end
