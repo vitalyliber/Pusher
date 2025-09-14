@@ -1,5 +1,5 @@
 # app/services/mobile_device_service.rb
-class MobileDeviceService
+class FirebaseMobileDeviceService
   attr_reader :device_token, :user_info, :device_info, :external_key, :mobile_access
 
   def initialize(device_token, user_info, device_info, external_key, mobile_access)

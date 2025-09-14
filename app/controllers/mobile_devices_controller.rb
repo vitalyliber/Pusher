@@ -11,13 +11,23 @@ class MobileDevicesController < ApplicationController
   def create
     permitted_params = params.require(:mobile_device).permit(:device_token, :user_info, :device_info, :external_key)
 
-    service = MobileDeviceService.new(
-      permitted_params[:device_token],
-      permitted_params[:user_info],
-      permitted_params[:device_info],
-      permitted_params[:external_key],
-      mobile_access
-    )
+    if params[:push_provider] == "huawei"
+      service = HuaweiMobileDeviceService.new(
+        params[:device_token],
+        params[:user_info],
+        params[:device_info],
+        params[:external_key],
+        mobile_access
+      )
+    else
+      service = FirebaseMobileDeviceService.new(
+        permitted_params[:device_token],
+        permitted_params[:user_info],
+        permitted_params[:device_info],
+        permitted_params[:external_key],
+        mobile_access
+      )
+    end
     @result = service.create
     @mobile_device = MobileDevice.new
 

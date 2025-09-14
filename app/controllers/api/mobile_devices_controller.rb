@@ -10,17 +10,16 @@ class Api::MobileDevicesController < ApiClientController
         params[:external_key],
         mobile_access
       )
-      result = service.create
     else
-      service = MobileDeviceService.new(
+      service = FirebaseMobileDeviceService.new(
         params[:device_token],
         params[:user_info],
         params[:device_info],
         params[:external_key],
         mobile_access
       )
-      result = service.create
     end
+    result = service.create
 
     render json: result[:json], status: result[:status]
   end
