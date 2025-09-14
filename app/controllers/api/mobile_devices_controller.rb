@@ -45,7 +45,7 @@ class Api::MobileDevicesController < ApiClientController
       Rails.logger.info "Unsubscribing from topic: #{topic} with device token: #{device_token}"
 
       mobile_access.notification_service.batch_topic_unsubscription(topic, [ device_token ]) if mobile_device.firebase?
-      # @TODO unsubscribe from topics if mobile_device.huawei?
+      mobile_access.huawei_notification_service.unsubscribe_from_topic(topic, [ device_token ]) if mobile_device.huawei?
     end
   end
 end

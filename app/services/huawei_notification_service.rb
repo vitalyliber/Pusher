@@ -19,17 +19,21 @@ class HuaweiNotificationService
     @access_token = JSON.parse(token_response.body)["access_token"]
   end
 
-  # The message object example: { notification: title: "Hello", body: "World", tokens: [ "xyz" ] }
-  def send_to_devices(token, payload = {})
+  # Send a notification to either devices (tokens) or a topic
+  def send_message(payload: {}, tokens: nil, topic: nil)
+    raise ArgumentError, "Either tokens or topic must be provided" unless tokens || topic
+
     body = {
       **payload,
       message: {
-        **payload[:message],
-        token:
+        **payload[:message]
       }
     }
 
-    HTTParty.post(
+    body[:message][:token] = tokens if tokens.present?
+    body[:message][:topic] = topic if topic.present?
+
+    response = HTTParty.post(
       "https://push-api.cloud.huawei.com/v1/#{client_id}/messages:send",
       headers: {
         "Authorization" => "Bearer #{access_token}",
@@ -37,13 +41,56 @@ class HuaweiNotificationService
       },
       body: body.to_json
     )
+
+    Rails.logger.info response.body
+    JSON.parse(response.body)
   end
 
   def valid?(tokens)
-    result = send_to_devices(tokens, { "validate_only": false, message: { data: { test: :validate_token }.to_json } })
+    result = send_message(tokens: tokens, payload: { "validate_only": false, message: { data: { test: :validate_token }.to_json } })
     Rails.logger.info result
     # 80300007: All the tokens are invalid
     # 80200003: Access token expired
     !(result["code"] == "80300007" || result["code"] == "80200003")
+  end
+
+  # Subscribe tokens to a topic
+  def subscribe_to_topic(topic, tokens)
+    body = {
+      topic: topic,
+      token: tokens
+    }
+
+    response = HTTParty.post(
+      "https://push-api.cloud.huawei.com/v1/#{client_id}/topic:subscribe",
+      headers: {
+        "Authorization" => "Bearer #{access_token}",
+        "Content-Type" => "application/json"
+      },
+      body: body.to_json
+    )
+
+    Rails.logger.info response.body
+    JSON.parse(response.body)
+  end
+
+  # Unsubscribe tokens from a topic
+  def unsubscribe_from_topic(topic, tokens)
+    body = {
+      topic: topic,
+      token: tokens
+    }
+
+    response = HTTParty.post(
+      "https://push-api.cloud.huawei.com/v1/#{client_id}/topic:unsubscribe",
+      headers: {
+        "Authorization" => "Bearer #{access_token}",
+        "Content-Type" => "application/json"
+      },
+      body: body.to_json
+    )
+
+    Rails.logger.info response.body
+    JSON.parse(response.body)
   end
 end
