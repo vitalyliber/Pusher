@@ -54,17 +54,23 @@ class HuaweiNotificationService
     result["code"] == "80000000"
   end
 
-  def test(token)
+  def test_token_message(token)
     result = send_message(tokens: [ token ], payload: { "validate_only": false,  message: { android: { notification: { title: "Hello", body: "World", click_action: { "type": 3 } } } } })
     Rails.logger.info result
     result["code"] == "80000000"
   end
 
+  def test_topic_message(topic)
+    result = send_message(topic:, payload: { "validate_only": false,  message: { android: { notification: { title: "Hello", body: "World", click_action: { "type": 3 } } } } })
+    Rails.logger.info result
+    result["code"] == "80000000"
+  end
+
   # Subscribe tokens to a topic
-  def subscribe_to_topic(topic, tokens)
+  def subscribe_to_topic(topic, tokenArray)
     body = {
-      topic: topic,
-      token: tokens
+      topic:,
+      tokenArray:
     }
 
     response = HTTParty.post(
@@ -81,10 +87,10 @@ class HuaweiNotificationService
   end
 
   # Unsubscribe tokens from a topic
-  def unsubscribe_from_topic(topic, tokens)
+  def unsubscribe_from_topic(topic, tokenArray)
     body = {
-      topic: topic,
-      token: tokens
+      topic:,
+      tokenArray:
     }
 
     response = HTTParty.post(
