@@ -9,9 +9,9 @@ class MobileDevicesController < ApplicationController
   end
 
   def create
-    permitted_params = params.require(:mobile_device).permit(:device_token, :user_info, :device_info, :external_key)
+    permitted_params = params.require(:mobile_device).permit(:device_token, :user_info, :device_info, :external_key, :push_provider)
 
-    if params[:push_provider] == "huawei"
+    if permitted_params[:push_provider] == "huawei"
       service = HuaweiMobileDeviceService.new(
         permitted_params[:device_token],
         permitted_params[:user_info],

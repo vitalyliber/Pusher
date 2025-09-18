@@ -15,9 +15,9 @@ class HuaweiMobileDeviceService < BaseMobileDeviceService
 
     # Check the device token is valid
     huawei_notification_service = mobile_access.huawei_notification_service
-    result = huawei_notification_service.valid?(device_token)
+    isValid = huawei_notification_service.valid?(device_token)
 
-    if result
+    unless isValid
       Rails.logger.error "The Huawei device token '#{device_token}' is invalid"
       return { json: { errors: [ "The Huawei device token is invalid" ] }, status: 400 }
     end
@@ -59,7 +59,7 @@ class HuaweiMobileDeviceService < BaseMobileDeviceService
       process_mobile_user(mobile_device)
       unsubscribe_from_unregistered_topic(mobile_device)
 
-      { json: {} }
+      { json: { status: 200 } }
     else
       { json: { errors: mobile_device.errors.full_messages }, status: 400 }
     end

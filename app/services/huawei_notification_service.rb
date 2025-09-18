@@ -46,12 +46,18 @@ class HuaweiNotificationService
     JSON.parse(response.body)
   end
 
-  def valid?(tokens)
-    result = send_message(tokens: tokens, payload: { "validate_only": false, message: { data: { test: :validate_token }.to_json } })
+  def valid?(token)
+    result = send_message(tokens: [ token ], payload: { "validate_only": false, message: { data: { test: :validate_token }.to_json } })
     Rails.logger.info result
     # 80300007: All the tokens are invalid
     # 80200003: Access token expired
-    !(result["code"] == "80300007" || result["code"] == "80200003")
+    result["code"] == "80000000"
+  end
+
+  def test(token)
+    result = send_message(tokens: [ token ], payload: { "validate_only": false,  message: { android: { notification: { title: "Hello", body: "World", click_action: { "type": 3 } } } } })
+    Rails.logger.info result
+    result["code"] == "80000000"
   end
 
   # Subscribe tokens to a topic
