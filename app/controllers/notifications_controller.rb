@@ -6,7 +6,7 @@ class NotificationsController < ApplicationController
   def create
     @target = params[:target]
     @result = mobile_access.send_notification(
-      data: notification_params[:data],
+      data: notification_params[:firebase_data],
       topic: notification_params[:topic],
       external_key: notification_params[:external_key]
     )
@@ -25,6 +25,6 @@ class NotificationsController < ApplicationController
   private
 
   def notification_params
-    params.expect(notification: [ :data, :topic, :external_key ])
+    params.expect(notification: [ :firebase_data, :huawei_data, :topic, :external_key ])
   end
 end
