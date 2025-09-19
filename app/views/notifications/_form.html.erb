@@ -1,25 +1,31 @@
 <%= form_with url: notifications_path, method: :post, class: "space-y-6" do %>
   <input type="hidden" name="target" value="<%= @target %>">
-  <div
+  <% ['firebase', 'huawei'].each do %>
+    <div
     class="space-y-4"
     data-controller="json-input-persister"
-    data-input-persister-key="notification_data"
+    data-input-persister-key="<%= it %>_notification_data"
+    data-input-persister-push-provider="<%= it %>"
   >
-    <label class="font-semibold block">Data</label>
-    <button class="btn btn-xs" data-action="click->json-input-persister#pasteJson">
-      Paste
-    </button>
-    <button class="btn btn-xs" data-action="click->json-input-persister#copyJson">
-      Copy
-    </button>
-    <div data-json-input-persister-target="editor" class="w-full h-64"></div>
-    <textarea
+      <label class="font-semibold block">Data <%= it.upcase %></label>
+      <button class="btn btn-xs" data-action="click->json-input-persister#pasteJson">
+        Paste
+      </button>
+      <button class="btn btn-xs" data-action="click->json-input-persister#reset">
+        Copy
+      </button>
+      <button class="btn btn-xs" data-action="click->json-input-persister#reset">
+        Reset
+      </button>
+      <div data-json-input-persister-target="editor" class="w-full h-64"></div>
+      <textarea
       data-json-input-persister-target="input"
       placeholder="Data"
-      name="notification[data]"
+      name="notification[<%= it %>_data]"
       class="w-full px-4 py-3 rounded hidden"
     ></textarea>
-  </div>
+    </div>
+  <% end %>
   <% if @target == "one" %>
     <div class="space-y-4" data-controller="mobile-device-search">
       <div class="flex items-center justify-start space-x-4">
@@ -41,44 +47,42 @@
         placeholder="External Key"
         class="w-full px-4 py-3 rounded"
         name="notification[external_key]"
-        value=""
-      />
-      <div class="text-xs text-gray-500">
-        Use only the Unique User Identifier. This field is not accept the push
-        notification token.
+        value="">
+        <div class="text-xs text-gray-500">
+          Use only the Unique User Identifier. This field is not accept the push
+          notification token.
+        </div>
       </div>
-    </div>
-  <% end %>
-  <% if @target == "multiple" %>
-    <div class="space-y-4">
-      <label class="font-semibold block">Topic</label>
-      <input
-        data-controller="input-persister"
-        data-action="input->input-persister#save"
-        placeholder="Topic"
-        class="w-full px-4 py-3 rounded"
-        name="notification[topic]"
-        value=""
-      />
-      <div class="text-xs text-gray-500">
-        You will send messages to all users who subscribed to the topic.
-      </div>
-    </div>
-  <% end %>
-  <% if @result.blank? && @target.present? %>
-    <button
+    <% end %>
+    <% if @target == "multiple" %>
+      <div class="space-y-4">
+        <label class="font-semibold block">Topic</label>
+        <input
+          data-controller="input-persister"
+          data-action="input->input-persister#save"
+          placeholder="Topic"
+          class="w-full px-4 py-3 rounded"
+          name="notification[topic]"
+          value="">
+          <div class="text-xs text-gray-500">
+            You will send messages to all users who subscribed to the topic.
+          </div>
+        </div>
+      <% end %>
+      <% if @result.blank? && @target.present? %>
+        <button
       <% if @target == 'multiple' %>
         data-turbo-confirm="Are you sure?"
       <% end %>
       class="<%= class_names("btn", "btn-secondary": @target == "multiple", "btn-neutral": @target == "one") %>"
       type="submit"
     >
-      <% if @target == "one" %>
-        Send to one user
+          <% if @target == "one" %>
+            Send to one user
+          <% end %>
+          <% if @target == "multiple" %>
+            Send to multiple users
+          <% end %>
+        </button>
       <% end %>
-      <% if @target == "multiple" %>
-        Send to multiple users
-      <% end %>
-    </button>
-  <% end %>
-<% end %>
+    <% end %>
