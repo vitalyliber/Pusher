@@ -5,8 +5,14 @@ class NotificationsController < ApplicationController
 
   def create
     @target = params[:target]
-    @result = mobile_access.send_notification(
+    @result = {}
+    @result[:firebase] = mobile_access.send_notification(
       data: notification_params[:firebase_data],
+      topic: notification_params[:topic],
+      external_key: notification_params[:external_key]
+    )
+    @result[:huawei] = mobile_access.huawei_notification_service.send_notification_by_external_key(
+      payload: notification_params[:huawei_data],
       topic: notification_params[:topic],
       external_key: notification_params[:external_key]
     )

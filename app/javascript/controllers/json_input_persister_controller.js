@@ -81,6 +81,7 @@ export default class extends Controller {
     const initialJSON = this.fetchInitialJSON();
     this.editor.set(initialJSON);
     this.inputTarget.value = JSON.stringify(initialJSON);
+    this.save();
     this.editor.expandAll();
   }
 
@@ -164,18 +165,16 @@ export default class extends Controller {
 
   huaweiInitialJSON() {
     return {
-      payload: {
-        validate_only: false,
-        message: {
-          android: {
-            notification: {
-              title: "Hello",
-              body: "World",
-              click_action: { type: 3 },
-              data: {
-                key1: "value1",
-                key2: "value2",
-              },
+      validate_only: false,
+      message: {
+        android: {
+          notification: {
+            title: "Hello",
+            body: "World",
+            click_action: { type: 3 },
+            data: {
+              key1: "value1",
+              key2: "value2",
             },
           },
         },

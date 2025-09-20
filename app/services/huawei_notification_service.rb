@@ -19,8 +19,20 @@ class HuaweiNotificationService
     @access_token = JSON.parse(token_response.body)["access_token"]
   end
 
+  def send_notification_by_external_key(payload:, topic: nil, external_key: nil)
+    tokens = nil
+
+    if external_key.present?
+      tokens = MobileUser.find_by(external_key:).huawei_device_tokens
+      return { error: "[Pusher] tokens not found by the provided external key." } if topic.blank? && tokens.blank?
+    end
+    payload = JSON.parse(payload, symbolize_names: true) if payload.is_a?(String)
+
+    send_notification(payload:, tokens:, topic:)
+  end
+
   # Send a notification to either devices (tokens) or a topic
-  def send_message(payload: {}, tokens: nil, topic: nil)
+  def send_notification(payload: {}, tokens: nil, topic: nil)
     raise ArgumentError, "Either tokens or topic must be provided" unless tokens || topic
 
     body = {
@@ -32,6 +44,7 @@ class HuaweiNotificationService
 
     body[:message][:token] = tokens if tokens.present?
     body[:message][:topic] = topic if topic.present?
+    body[:message][:android][:notification][:data] = body[:message][:android][:notification][:data].to_json if body[:message][:android][:notification][:data].present?
 
     response = HTTParty.post(
       "https://push-api.cloud.huawei.com/v1/#{client_id}/messages:send",
@@ -47,7 +60,7 @@ class HuaweiNotificationService
   end
 
   def valid?(token)
-    result = send_message(tokens: [ token ], payload: { "validate_only": false, message: { data: { test: :validate_token }.to_json } })
+    result = send_notification(tokens: [ token ], payload: { "validate_only": false, message: { data: { test: :validate_token }.to_json } })
     Rails.logger.info result
     # 80300007: All the tokens are invalid
     # 80200003: Access token expired
@@ -55,13 +68,13 @@ class HuaweiNotificationService
   end
 
   def test_token_message(token)
-    result = send_message(tokens: [ token ], payload: { "validate_only": false,  message: { android: { notification: { title: "Hello", body: "World", click_action: { "type": 3 } } } } })
+    result = send_notification(tokens: [ token ], payload: { "validate_only": false,  message: { android: { notification: { title: "Hello", body: "World", click_action: { "type": 3 } } } } })
     Rails.logger.info result
     result["code"] == "80000000"
   end
 
   def test_topic_message(topic)
-    result = send_message(topic:, payload: { "validate_only": false,  message: { android: { notification: { title: "Hello", body: "World", click_action: { "type": 3 } } } } })
+    result = send_notification(topic:, payload: { "validate_only": false,  message: { android: { notification: { title: "Hello", body: "World", click_action: { "type": 3 } } } } })
     Rails.logger.info result
     result["code"] == "80000000"
   end
