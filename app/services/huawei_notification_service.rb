@@ -3,7 +3,11 @@ require "httparty"
 class HuaweiNotificationService
   attr_reader :access_token, :client_id, :client_secret
 
+  EMPTY_TOKEN_ERROR_MESSAGE = { error:  "Please provide valid Huawei credentials" }
+
   def initialize(client_id, client_secret)
+    return if client_id.blank? && client_secret.blank?
+
     @client_id = client_id
     @client_secret = client_secret
 
@@ -20,6 +24,8 @@ class HuaweiNotificationService
   end
 
   def send_notification_by_external_key(payload:, topic: nil, external_key: nil)
+    return EMPTY_TOKEN_ERROR_MESSAGE if access_token.blank?
+
     tokens = nil
 
     if external_key.present?
@@ -34,6 +40,7 @@ class HuaweiNotificationService
   # Send a notification to either devices (tokens) or a topic
   def send_notification(payload: {}, tokens: nil, topic: nil)
     raise ArgumentError, "Either tokens or topic must be provided" unless tokens || topic
+    raise ArgumentError, "Payload message should be an object: '#{payload[:message]}'" if payload[:message].is_a?(String)
 
     body = {
       **payload,
@@ -44,7 +51,8 @@ class HuaweiNotificationService
 
     body[:message][:token] = tokens if tokens.present?
     body[:message][:topic] = topic if topic.present?
-    body[:message][:android][:notification][:data] = body[:message][:android][:notification][:data].to_json if body[:message][:android][:notification][:data].present?
+    notification_data = body.dig(:message, :android, :notification, :data)
+    body[:message][:android][:notification][:data] = notification_data.to_json if notification_data.present?
 
     response = HTTParty.post(
       "https://push-api.cloud.huawei.com/v1/#{client_id}/messages:send",
@@ -81,6 +89,8 @@ class HuaweiNotificationService
 
   # Subscribe tokens to a topic
   def subscribe_to_topic(topic, tokenArray)
+    return EMPTY_TOKEN_ERROR_MESSAGE if access_token.blank?
+
     body = {
       topic:,
       tokenArray:
@@ -101,6 +111,8 @@ class HuaweiNotificationService
 
   # Unsubscribe tokens from a topic
   def unsubscribe_from_topic(topic, tokenArray)
+    return EMPTY_TOKEN_ERROR_MESSAGE if access_token.blank?
+
     body = {
       topic:,
       tokenArray:
