@@ -32,7 +32,7 @@ class Api::NotificationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :ok
-    assert_equal "success", JSON.parse(response.body)["status"]
+    assert_equal true, JSON.parse(response.body)["firebase"]["success"]
   end
 
   test "should return error when both topic and external_key are present" do
