@@ -7,7 +7,7 @@ class Api::NotificationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   def authenticated_request(method, path, params: {})
-    send(method, path, params: params, headers: { "Authorization" => "Bearer #{@valid_token}" })
+    send(method, path, params: params, headers: { "Authorization" => "Bearer #{@valid_token}", "Content-Type": "application/json" }, as: :json)
   end
 
   def huawei_message
@@ -53,17 +53,33 @@ class Api::NotificationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "[Huawei] should create notification successfully" do
+    huawei_notification_service_mock = Minitest::Mock.new
+    huawei_notification_service_mock.expect(:send_notification_by_external_key, true, payload: huawei_message.deep_stringify_keys, topic: "test_topic", external_key: nil)
+    huawei_notification_service_mock.expect(:send_notification_by_external_key, true, payload: huawei_message.deep_stringify_keys, topic: nil, external_key: "user123")
+
+    HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
+      authenticated_request(:post, api_notifications_path, params: {
+        huawei_payload: huawei_message,
+        topic: "test_topic"
+      })
+
+      assert_response :ok
+      assert_equal true, JSON.parse(response.body)["huawei"]
+
+      authenticated_request(:post, api_notifications_path, params: {
+        huawei_payload: huawei_message,
+        external_key: "user123"
+      })
+
+      assert_response :ok
+      assert_equal true, JSON.parse(response.body)["huawei"]
+    end
+  end
+
+  test "[Huawei] should receive an error message" do
     authenticated_request(:post, api_notifications_path, params: {
       huawei_payload: huawei_message,
       topic: "test_topic"
-    })
-
-    assert_response :ok
-    assert_equal "Please provide valid Huawei credentials", JSON.parse(response.body)["huawei"]["error"]
-
-    authenticated_request(:post, api_notifications_path, params: {
-      huawei_payload: huawei_message,
-      external_key: "user123"
     })
 
     assert_response :ok
