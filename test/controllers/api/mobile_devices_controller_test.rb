@@ -57,7 +57,7 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     huawei_notification_service_mock.verify
   end
 
-  test "should create mobile device and add device token to device group" do
+  test "[Firebase] should create mobile device and add device token to device group" do
     fcm_mock = Minitest::Mock.new
     new_device_token = "0002"
 
@@ -67,7 +67,7 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     fcm_mock.expect(:add, { body: "{}" }, [ "user123", nil, "device_group_token_one", [ @mobile_device.device_token, new_device_token ] ])
     fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0002" ] ])
 
-    assert_difference({ "MobileDevice.count" => 1, "MobileUser.count" => 0 }) do
+    assert_difference({ "MobileDevice.firebase.count" => 1, "MobileUser.count" => 0 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           device_token: new_device_token,
@@ -80,6 +80,30 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
       end
     end
     fcm_mock.verify
+  end
+
+  test "[Huawei] should create mobile device and add all existing topics" do
+    huawei_notification_service_mock = Minitest::Mock.new
+    huawei_notification_service_mock.expect(:valid?, true, [ "0002" ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "0002" ] ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "topic1", [ "0002" ] ])
+    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "unregistered", [ "0002" ] ])
+    new_device_token = "0002"
+
+    assert_difference({ "MobileDevice.huawei.count" => 1, "MobileUser.count" => 0 }) do
+      HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          device_token: new_device_token,
+          user_info: "New User Info",
+          device_info: "New Device Info",
+          external_key: @mobile_device.external_key,
+          push_provider: "huawei"
+        })
+
+        assert_response :success
+      end
+    end
+    huawei_notification_service_mock.verify
   end
 
   # Need to ensure that we attach topics and update device tokens in device group for new mobile device for existing mobile user
