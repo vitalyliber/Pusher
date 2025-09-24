@@ -51,7 +51,7 @@ class HuaweiMobileDeviceService < BaseMobileDeviceService
       end
     end
 
-    mobile_device = MobileDevice.new(device_token:, user_info:, device_info:, external_key:, mobile_access:)
+    mobile_device = MobileDevice.new(device_token:, user_info:, device_info:, external_key:, mobile_access:, push_provider: :huawei)
 
     return { json: { errors: mobile_device.errors.full_messages }, status: 400 } unless mobile_device.valid?
 

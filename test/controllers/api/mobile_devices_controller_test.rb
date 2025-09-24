@@ -11,7 +11,7 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     send(method, path, params: params, headers: { "Authorization" => "Bearer #{@valid_token}" })
   end
 
-  test "should create mobile device and create a notification key" do
+  test "[Firebase] should create mobile device and create a notification key" do
     fcm_mock = Minitest::Mock.new
 
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
@@ -19,7 +19,7 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
     fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0001" ] ])
 
-    assert_difference({ "MobileDevice.count" => 1, "MobileUser.count" => 1 }) do
+    assert_difference({ "MobileDevice.firebase.count" => 1, "MobileUser.count" => 1 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           device_token: "0001",
@@ -32,6 +32,29 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
       end
     end
     fcm_mock.verify
+  end
+
+  test "[Huawei] should create mobile device" do
+    huawei_notification_service_mock = Minitest::Mock.new
+
+    huawei_notification_service_mock.expect(:valid?, true, [ "Huawei_0001" ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "Huawei_0001" ] ])
+    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "unregistered", [ "Huawei_0001" ] ])
+
+    assert_difference({ "MobileDevice.huawei.count" => 1, "MobileUser.count" => 1 }) do
+      HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          device_token: "Huawei_0001",
+          user_info: "New User Info",
+          device_info: "New Device Info",
+          external_key: "user_external_key",
+          push_provider: "huawei"
+        })
+
+        assert_response :success
+      end
+    end
+    huawei_notification_service_mock.verify
   end
 
   test "should create mobile device and add device token to device group" do
