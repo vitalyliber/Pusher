@@ -107,14 +107,14 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
   end
 
   # Need to ensure that we attach topics and update device tokens in device group for new mobile device for existing mobile user
-  test "change an external_key for existing mobile device" do
+  test "[Firebase] change an external_key for existing mobile device" do
     fcm_mock = Minitest::Mock.new
 
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
     fcm_mock.expect(:batch_topic_subscription, true, [ String, Array ])
     fcm_mock.expect(:create, { body: "{\"notification_key\":\"xxx\"}" }, [ String, nil, Array ])
 
-    assert_difference({ "MobileDevice.count" => 0, "MobileUser.count" => 1 }) do
+    assert_difference({ "MobileDevice.firebase.count" => 0, "MobileUser.count" => 1 }) do
       FCM.stub(:new, fcm_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           device_token: @mobile_device.device_token,
@@ -130,7 +130,29 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     fcm_mock.verify
   end
 
-  test "should return existing mobile device and user" do
+  test "[Huawei] change an external_key for existing mobile device" do
+    huawei_notification_service_mock = Minitest::Mock.new
+    huawei_notification_service_mock.expect(:valid?, true, [ "12345" ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "12345" ] ])
+
+    assert_difference({ "MobileDevice.huawei.count" => 0, "MobileUser.count" => 1 }) do
+      HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          device_token: @mobile_device.device_token,
+          user_info: "New User Info",
+          device_info: "New Device Info",
+          external_key: "user_external_key_changed",
+          push_provider: "huawei"
+        })
+
+        assert_response :success
+      end
+    end
+
+    huawei_notification_service_mock.verify
+  end
+
+  test "[Firebase] should return existing mobile device and user" do
     fcm_mock = Minitest::Mock.new
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
 
@@ -146,8 +168,25 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should not create mobile device with invalid params" do
-    assert_no_difference("MobileDevice.count") do
+  test "[Huawei] should return existing mobile device and user" do
+    huawei_notification_service_mock = Minitest::Mock.new
+    huawei_notification_service_mock.expect(:valid?, true, [ "12345" ])
+
+    HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
+      authenticated_request(:post, api_mobile_devices_url, params: {
+        device_token: @mobile_device.device_token,
+        external_key: @mobile_device.external_key,
+        push_provider: "huawei"
+      })
+      assert_response :success
+      json_response = JSON.parse(response.body)
+      assert_equal "12345", json_response["mobile_device"]["device_token"]
+      assert_equal @mobile_device.external_key, json_response["mobile_device"]["external_key"]
+    end
+  end
+
+  test "[Firebase] should not create mobile device with invalid params" do
+    assert_no_difference("MobileDevice.firebase.count") do
       authenticated_request(:post, api_mobile_devices_url, params: {
         device_token: nil,
         external_key: "user_external_key"
@@ -159,14 +198,28 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     assert_includes json_response["errors"], "Device token can't be blank"
   end
 
-  test "should add the unregistered topic and remove the mobile device if it exists" do
+  test "[Huawei] should not create mobile device with invalid params" do
+    assert_no_difference("MobileDevice.huawei.count") do
+      authenticated_request(:post, api_mobile_devices_url, params: {
+        device_token: nil,
+        external_key: "user_external_key",
+        push_provider: "huawei"
+      })
+    end
+    assert_response :bad_request
+    json_response = JSON.parse(response.body)
+
+    assert_includes json_response["errors"], "Device token can't be blank"
+  end
+
+  test "[Firebase] should add the unregistered topic and remove the mobile device if it exists" do
     fcm_mock = Minitest::Mock.new
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ String ])
     fcm_mock.expect(:batch_topic_subscription, true, [ "unregistered", [ @mobile_device.device_token ] ])
     fcm_mock.expect(:batch_topic_subscription, true, [ "general", [ @mobile_device.device_token ] ])
 
     FCM.stub(:new, fcm_mock) do
-      assert_difference({ "MobileDevice.count" => -1, "MobileUser.count" => 0 }) do
+      assert_difference({ "MobileDevice.firebase.count" => -1, "MobileUser.count" => 0 }) do
         authenticated_request(:post, api_mobile_devices_url, params: {
           device_token: @mobile_device.device_token,
           external_key: nil
@@ -176,7 +229,25 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should destroy mobile device" do
+  test "[Huawei] should add the unregistered topic and remove the mobile device if it exists" do
+    huawei_notification_service_mock = Minitest::Mock.new
+    huawei_notification_service_mock.expect(:valid?, true, [ "12345" ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "unregistered", [ "12345" ] ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "12345" ] ])
+
+    HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
+      assert_difference({ "MobileDevice.firebase.count" => -1, "MobileUser.count" => 0 }) do
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          device_token: @mobile_device.device_token,
+          external_key: nil,
+          push_provider: "huawei"
+        })
+      end
+      assert_response :success
+    end
+  end
+
+  test "[Firebase] should destroy mobile device" do
     fcm_mock = Minitest::Mock.new
 
     fcm_mock.expect(:remove, { body: "{}" }, [ @mobile_device.external_key, nil, @mobile_device.mobile_user.device_group_token, [ @mobile_device.device_token ] ])
@@ -191,6 +262,24 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
       end
     end
     fcm_mock.verify
+    assert_response :success
+  end
+
+  test "[Huawei] should destroy mobile device" do
+    huawei_notification_service_mock = Minitest::Mock.new
+    @mobile_device.huawei!
+
+    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "general", [ "12345" ] ])
+    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "topic1", [ "12345" ] ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "unregistered", [ "12345" ] ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "12345" ] ])
+
+    assert_difference("MobileDevice.count", -1) do
+      HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
+        authenticated_request(:delete, api_mobile_device_url(@mobile_device.device_token))
+      end
+    end
+    huawei_notification_service_mock.verify
     assert_response :success
   end
 end
