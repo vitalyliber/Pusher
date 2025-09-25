@@ -107,6 +107,32 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     huawei_notification_service_mock.verify
   end
 
+  test "[Firebase][Huawei] should create mobile device to a mobile user with a first mobile device (push_provider: huawei)" do
+    fcm_mock = Minitest::Mock.new
+    new_device_token = "0002"
+
+    fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ new_device_token ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "general", [ new_device_token ] ])
+    fcm_mock.expect(:batch_topic_subscription, true, [ "topic1", [ new_device_token ] ])
+    fcm_mock.expect(:add, { body: { error: "notification_key not found" }.to_json }, [ "huawei_user_1", nil, nil, [ new_device_token ] ])
+    fcm_mock.expect(:create, { body: { notification_key: "created_notification_key" }.to_json }, [ "huawei_user_1", nil, [ new_device_token ] ])
+    fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0002" ] ])
+
+    assert_difference({ "MobileDevice.firebase.count" => 1, "MobileUser.count" => 0 }) do
+      FCM.stub(:new, fcm_mock) do
+        authenticated_request(:post, api_mobile_devices_url, params: {
+          device_token: new_device_token,
+          user_info: "New User Info",
+          device_info: "New Device Info",
+          external_key: @mobile_device_huawei.external_key
+        })
+
+        assert_response :success
+      end
+    end
+    fcm_mock.verify
+  end
+
   # Need to ensure that we attach topics and update device tokens in device group for new mobile device for existing mobile user
   test "[Firebase] change an external_key for existing mobile device" do
     fcm_mock = Minitest::Mock.new
