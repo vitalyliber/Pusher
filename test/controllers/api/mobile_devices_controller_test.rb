@@ -5,6 +5,7 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     @mobile_access = mobile_accesses(:mobile_access)
     @valid_token = @mobile_access.client_token
     @mobile_device = mobile_devices(:mobile_device)
+    @mobile_device_huawei = mobile_devices(:mobile_device_huawei)
   end
 
   def authenticated_request(method, path, params: {})
@@ -96,7 +97,7 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
           device_token: new_device_token,
           user_info: "New User Info",
           device_info: "New Device Info",
-          external_key: @mobile_device.external_key,
+          external_key: @mobile_device_huawei.external_key,
           push_provider: "huawei"
         })
 
@@ -132,13 +133,13 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "[Huawei] change an external_key for existing mobile device" do
     huawei_notification_service_mock = Minitest::Mock.new
-    huawei_notification_service_mock.expect(:valid?, true, [ "12345" ])
-    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "12345" ] ])
+    huawei_notification_service_mock.expect(:valid?, true, [ "huawei_12345" ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "huawei_12345" ] ])
 
     assert_difference({ "MobileDevice.huawei.count" => 0, "MobileUser.count" => 1 }) do
       HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
         authenticated_request(:post, api_mobile_devices_url, params: {
-          device_token: @mobile_device.device_token,
+          device_token: @mobile_device_huawei.device_token,
           user_info: "New User Info",
           device_info: "New Device Info",
           external_key: "user_external_key_changed",
@@ -170,18 +171,18 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "[Huawei] should return existing mobile device and user" do
     huawei_notification_service_mock = Minitest::Mock.new
-    huawei_notification_service_mock.expect(:valid?, true, [ "12345" ])
+    huawei_notification_service_mock.expect(:valid?, true, [ "huawei_12345" ])
 
     HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
       authenticated_request(:post, api_mobile_devices_url, params: {
-        device_token: @mobile_device.device_token,
-        external_key: @mobile_device.external_key,
+        device_token: @mobile_device_huawei.device_token,
+        external_key: @mobile_device_huawei.external_key,
         push_provider: "huawei"
       })
       assert_response :success
       json_response = JSON.parse(response.body)
-      assert_equal "12345", json_response["mobile_device"]["device_token"]
-      assert_equal @mobile_device.external_key, json_response["mobile_device"]["external_key"]
+      assert_equal "huawei_12345", json_response["mobile_device"]["device_token"]
+      assert_equal @mobile_device_huawei.external_key, json_response["mobile_device"]["external_key"]
     end
   end
 
@@ -231,14 +232,14 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "[Huawei] should add the unregistered topic and remove the mobile device if it exists" do
     huawei_notification_service_mock = Minitest::Mock.new
-    huawei_notification_service_mock.expect(:valid?, true, [ "12345" ])
-    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "unregistered", [ "12345" ] ])
-    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "12345" ] ])
+    huawei_notification_service_mock.expect(:valid?, true, [ "huawei_12345" ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "unregistered", [ "huawei_12345" ] ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "huawei_12345" ] ])
 
     HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
-      assert_difference({ "MobileDevice.firebase.count" => -1, "MobileUser.count" => 0 }) do
+      assert_difference({ "MobileDevice.huawei.count" => -1, "MobileUser.count" => 0 }) do
         authenticated_request(:post, api_mobile_devices_url, params: {
-          device_token: @mobile_device.device_token,
+          device_token: @mobile_device_huawei.device_token,
           external_key: nil,
           push_provider: "huawei"
         })
@@ -267,16 +268,15 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
 
   test "[Huawei] should destroy mobile device" do
     huawei_notification_service_mock = Minitest::Mock.new
-    @mobile_device.huawei!
 
-    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "general", [ "12345" ] ])
-    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "topic1", [ "12345" ] ])
-    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "unregistered", [ "12345" ] ])
-    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "12345" ] ])
+    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "general", [ "huawei_12345" ] ])
+    huawei_notification_service_mock.expect(:unsubscribe_from_topic, true, [ "topic1", [ "huawei_12345" ] ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "unregistered", [ "huawei_12345" ] ])
+    huawei_notification_service_mock.expect(:subscribe_to_topic, true, [ "general", [ "huawei_12345" ] ])
 
     assert_difference("MobileDevice.count", -1) do
       HuaweiNotificationService.stub(:new, huawei_notification_service_mock) do
-        authenticated_request(:delete, api_mobile_device_url(@mobile_device.device_token))
+        authenticated_request(:delete, api_mobile_device_url(@mobile_device_huawei.device_token))
       end
     end
     huawei_notification_service_mock.verify
