@@ -9,11 +9,11 @@ class MobileUser < ApplicationRecord
   delegate :create_notification_key, to: :notification_service
 
   def firebase_device_tokens
-    @_device_tokens ||= mobile_devices.firebase.pluck(:device_token).compact
+    @_firebase_device_tokens ||= mobile_devices.firebase.pluck(:device_token).compact
   end
 
   def huawei_device_tokens
-    @_device_tokens ||= mobile_devices.huawei.pluck(:device_token).compact
+    @_huawei_device_tokens ||= mobile_devices.huawei.pluck(:device_token).compact
   end
 
   def notification_service
