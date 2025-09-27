@@ -64,7 +64,10 @@ class HuaweiNotificationService
     )
 
     Rails.logger.info response.body
-    JSON.parse(response.body)
+    parsed_body = JSON.parse(response.body)
+    remove_invalid_tokens(parsed_body["msg"])
+
+    parsed_body
   end
 
   def valid?(token)
@@ -129,5 +132,17 @@ class HuaweiNotificationService
 
     Rails.logger.info response.body
     JSON.parse(response.body)
+  end
+
+  def remove_invalid_tokens(msg_json)
+    parsed_msg = JSON.parse(msg_json)
+
+    Rails.logger.info "[Huawei][RemoveInvalidTokens] Illegal tokens found: #{parsed_msg["illegal_tokens"]}"
+
+    return unless parsed_msg["illegal_tokens"].any?
+
+    MobileDevice.huawei.where(device_token: parsed_msg["illegal_tokens"]).delete_all
+  rescue
+    Rails.logger.info "[Huawei][RemoveInvalidTokens] Error while parsing the message: #{msg_json}"
   end
 end
