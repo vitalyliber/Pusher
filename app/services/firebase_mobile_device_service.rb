@@ -18,7 +18,7 @@ class FirebaseMobileDeviceService < BaseMobileDeviceService
 
     if result[:status_code] != 200
       Rails.logger.error "Error getting instance ID info for device token: #{device_token}, status code: #{result[:status_code]}, error: #{result[:body]}"
-      return { json: { errors: [ "Invalid device token" ] }, status: 400 }
+      return { json: { errors: [ "Firebase device token is invalid" ] }, status: 400 }
     end
 
     if external_key.blank?
@@ -58,7 +58,7 @@ class FirebaseMobileDeviceService < BaseMobileDeviceService
       process_mobile_user(mobile_device)
       unsubscribe_from_unregistered_topic(mobile_device)
 
-      { json: {} }
+      { json: { status: 200 } }
     else
       { json: { errors: mobile_device.errors.full_messages }, status: 400 }
     end
@@ -73,7 +73,12 @@ class FirebaseMobileDeviceService < BaseMobileDeviceService
     )
 
     if mobile_user
-      mobile_user.update_device_tokens_in_device_group
+      if mobile_user.device_group_token.present?
+        mobile_user.update_device_tokens_in_device_group
+      else
+        # If we have already created a mobile device using the 'HuaweiMobileDevice' service
+        mobile_user.create_device_group_token
+      end
     else
       mobile_user = MobileUser.create(
         mobile_access:,

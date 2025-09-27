@@ -31,14 +31,14 @@ class MobileDevicesController < ApplicationController
     @result = service.create
     @mobile_device = MobileDevice.new
 
-    if @result[:status] == 200
-      flash[:notice] = @result[:json][:messages]&.join(", ") || "Mobile device created successfully."
+    if @result.dig(:json, :status) == 200
+      flash[:notice] = @result.dig(:json, :messages)&.join(", ") || "Mobile device created successfully."
 
       return redirect_to root_path if permitted_params[:external_key].blank?
 
       redirect_to mobile_device_path(permitted_params[:external_key])
     else
-      flash[:alert] = @result[:json][:errors].join(", ")
+      flash[:alert] = @result.dig(:json, :errors)&.join(", ")
       redirect_to new_mobile_device_path
     end
   end
