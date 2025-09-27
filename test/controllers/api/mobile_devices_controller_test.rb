@@ -114,7 +114,6 @@ class Api::MobileDevicesControllerTest < ActionDispatch::IntegrationTest
     fcm_mock.expect(:get_instance_id_info, { status_code: 200 }, [ new_device_token ])
     fcm_mock.expect(:batch_topic_subscription, true, [ "general", [ new_device_token ] ])
     fcm_mock.expect(:batch_topic_subscription, true, [ "topic1", [ new_device_token ] ])
-    fcm_mock.expect(:add, { body: { error: "notification_key not found" }.to_json }, [ "huawei_user_1", nil, nil, [ new_device_token ] ])
     fcm_mock.expect(:create, { body: { notification_key: "created_notification_key" }.to_json }, [ "huawei_user_1", nil, [ new_device_token ] ])
     fcm_mock.expect(:batch_topic_unsubscription, true, [ "unregistered", [ "0002" ] ])
 
