@@ -78,6 +78,8 @@ export default class extends Controller {
   async reset(event) {
     event.preventDefault();
 
+    if (!confirm("Are you sure you want to reset this payload?")) return;
+
     const initialJSON = this.fetchInitialJSON();
     this.editor.set(initialJSON);
     this.inputTarget.value = JSON.stringify(initialJSON);
@@ -153,8 +155,8 @@ export default class extends Controller {
   firebaseInitialJSON() {
     return {
       notification: {
-        title: "Hey",
-        body: ":)",
+        title: "Test title",
+        body: "Test message",
       },
       data: {
         key1: "value1",
@@ -169,12 +171,11 @@ export default class extends Controller {
       message: {
         android: {
           notification: {
-            title: "Hello",
-            body: "World",
+            title: "Test title",
+            body: "Test message",
             click_action: { type: 3 },
             data: {
               key1: "value1",
-              key2: "value2",
             },
           },
         },

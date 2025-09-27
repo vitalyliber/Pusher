@@ -63,7 +63,7 @@ Params:
 
 ```json
 {
-  "payload": {
+  "firebase_payload": {
     "notification": {
       "title": "Test title",
       "body": "Test message"
@@ -89,6 +89,23 @@ Params:
           "badge": 2,
           "sound": "default",
           "content-available": 1
+        }
+      }
+    }
+  },
+  "huawei_payload": {
+    "validate_only": false,
+    "message": {
+      "android": {
+        "notification": {
+          "title": "Test title",
+          "body": "Test message",
+          "click_action": {
+            "type": 3
+          },
+          "data": {
+            "key1": "value1"
+          }
         }
       }
     }
