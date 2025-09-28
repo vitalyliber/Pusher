@@ -5,7 +5,7 @@
     </span>
     <br>
     <span class="text-blue-900 font-bold text-sm">
-      <%= params[:id]%>
+      <%= params[:id] %>
     </span>
   </h1>
   <% if @mobile_user.present? %>
@@ -27,7 +27,7 @@
       <%= form.submit "Add Topic", class: "btn btn-primary ml-4" %>
     <% end %>
   <% end %>
-  <div class="space-y-4 mt-20">
+  <div class="space-y-8 mt-20">
     <%= render @mobile_devices, partial: "mobile_devices/mobile_device" %>
   </div>
   <% unless @mobile_devices.any? %>

@@ -1,10 +1,15 @@
-<div class="mb-4 p-4 border rounded-lg bg-white shadow">
+<div class="p-4 border rounded-lg bg-white shadow">
   <p class="rounded px-3 py-1 text-white font-bold break-all mb-3 capitalize <%= class_names("bg-red-500": mobile_device.huawei?, "bg-yellow-500": mobile_device.firebase?) %>">
     <%= mobile_device.push_provider %>
   </p>
   <div class="space-y-2">
     <p class="text-gray-700 break-all">
-      <strong>External Key:</strong> <%= mobile_device.external_key %>
+      <%= link_to mobile_device_path(mobile_device.external_key), class: "underline hover:text-blue-500" do %>
+        <strong>
+          External Key:
+        </strong>
+      <% end %>
+      <%= mobile_device.external_key %>
     </p>
     <p class="text-gray-700 break-all">
       <strong>Token:</strong> <%= mobile_device.device_token %>
