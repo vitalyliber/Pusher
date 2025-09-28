@@ -44,16 +44,29 @@ class MobileDevicesController < ApplicationController
   end
 
   def stats
-    @daily_count = Rails.cache.fetch("mobile_device_stats_daily", expires_in: 1.hour) do
-      mobile_access.mobile_devices.where("updated_at >= ?", 1.day.ago).distinct.count
+    @daily_firebase_count = mobile_device_count(:firebase, :daily)
+    @daily_huawei_count = mobile_device_count(:huawei, :daily)
+
+    @weekly_firebase_count = mobile_device_count(:firebase, :weekly)
+    @weekly_huawei_count = mobile_device_count(:huawei, :weekly)
+
+    @monthly_firebase_count = mobile_device_count(:firebase, :monthly)
+    @monthly_huawei_count = mobile_device_count(:huawei, :monthly)
+  end
+
+  def mobile_device_count(platform, timeframe)
+    cache_key = "mobile_device_#{platform}_stats_#{timeframe}"
+    timeframe_duration = case timeframe
+    when :daily then 1.day
+    when :weekly then 1.week
+    when :monthly then 1.month
+    else raise ArgumentError, "Invalid timeframe: #{timeframe}"
     end
 
-    @weekly_count = Rails.cache.fetch("mobile_device_stats_weekly", expires_in: 1.hour) do
-      mobile_access.mobile_devices.where("updated_at >= ?", 1.week.ago).distinct.count
-    end
-
-    @monthly_count = Rails.cache.fetch("mobile_device_stats_monthly", expires_in: 1.hour) do
-      mobile_access.mobile_devices.where("updated_at >= ?", 1.month.ago).distinct.count
+    Rails.cache.fetch(cache_key, expires_in: 1.hour) do
+      query = mobile_access.mobile_devices
+      query = query.send(platform) if platform.present?
+      query.where("updated_at >= ?", timeframe_duration.ago).distinct.count
     end
   end
 end

@@ -4,20 +4,11 @@
       <h1 class="text-xl font-bold text-center mb-6">User Activity Statistics</h1>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Daily -->
-        <div class="bg-white shadow-lg rounded-lg p-6 text-center">
-          <h2 class="text-md font-semibold text-gray-700">Last Day</h2>
-          <p class="text-xl font-bold text-blue-600 mt-2"><%= number_with_delimiter(@daily_count) %></p>
-        </div>
+        <%= render partial: 'stats_tile', locals: { title: 'Last Day', firebase_count: @daily_firebase_count, huawei_count: @daily_huawei_count } %>
         <!-- Weekly -->
-        <div class="bg-white shadow-lg rounded-lg p-6 text-center">
-          <h2 class="text-md font-semibold text-gray-700">Last Week</h2>
-          <p class="text-xl font-bold text-blue-600 mt-2"><%= number_with_delimiter(@weekly_count) %></p>
-        </div>
+        <%= render partial: 'stats_tile', locals: { title: 'Last Week', firebase_count: @weekly_firebase_count, huawei_count: @weekly_huawei_count } %>
         <!-- Monthly -->
-        <div class="bg-white shadow-lg rounded-lg p-6 text-center">
-          <h2 class="text-md font-semibold text-gray-700">Last Month</h2>
-          <p class="text-xl font-bold text-blue-600 mt-2"><%= number_with_delimiter(@monthly_count) %></p>
-        </div>
+        <%= render partial: 'stats_tile', locals: { title: 'Last Month', firebase_count: @monthly_firebase_count, huawei_count: @monthly_huawei_count } %>
       </div>
     </div>
   <% end %>
