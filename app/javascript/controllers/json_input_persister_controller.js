@@ -52,20 +52,19 @@ export default class extends Controller {
         console.error("Failed to parse saved JSON:", e);
       }
     } else {
-      const initialJson = {
-        notification: {
-          title: "Hey",
-          body: ":)",
-        },
-        data: {
-          key1: "value1",
-          key2: "value2",
-        },
-      };
+      const initialJson = this.fetchInitialJSON();
+      console.log("initialJson", initialJson);
       this.editor.set(initialJson);
       this.inputTarget.value = JSON.stringify(initialJson);
     }
     this.editor.expandAll();
+  }
+
+  fetchInitialJSON() {
+    const key = `${this.element.dataset.inputPersisterPushProvider}InitialJSON`;
+    const func = this[key];
+
+    return func();
   }
 
   getStorageKey() {
@@ -74,6 +73,18 @@ export default class extends Controller {
       this.inputTarget.id ||
       this.inputTarget.name
     );
+  }
+
+  async reset(event) {
+    event.preventDefault();
+
+    if (!confirm("Are you sure you want to reset this payload?")) return;
+
+    const initialJSON = this.fetchInitialJSON();
+    this.editor.set(initialJSON);
+    this.inputTarget.value = JSON.stringify(initialJSON);
+    this.save();
+    this.editor.expandAll();
   }
 
   // Paste JSON from clipboard
@@ -139,5 +150,36 @@ export default class extends Controller {
       alert("Error copying to clipboard");
       console.error("Clipboard write error:", e);
     }
+  }
+
+  firebaseInitialJSON() {
+    return {
+      notification: {
+        title: "Test title",
+        body: "Test message",
+      },
+      data: {
+        key1: "value1",
+        key2: "value2",
+      },
+    };
+  }
+
+  huaweiInitialJSON() {
+    return {
+      validate_only: false,
+      message: {
+        android: {
+          notification: {
+            title: "Test title",
+            body: "Test message",
+            click_action: { type: 3 },
+          },
+          data: {
+            key1: "value1",
+          },
+        },
+      },
+    };
   }
 }

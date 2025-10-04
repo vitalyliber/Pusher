@@ -1,20 +1,51 @@
-<div class="mb-4 p-4 border rounded-lg bg-white shadow">
-  <p class="text-gray-700 break-all">
-    <strong>External Key:</strong> <%= mobile_device.external_key %>
+<div class="p-4 border rounded-lg bg-white shadow">
+  <p class="rounded px-3 py-1 text-white font-bold break-all mb-3 capitalize <%= class_names("bg-red-500": mobile_device.huawei?, "bg-yellow-500": mobile_device.firebase?) %>">
+    <%= mobile_device.push_provider %>
   </p>
-  <p class="text-gray-700 break-all">
-    <strong>Token:</strong> <%= mobile_device.device_token %>
-  </p>
-  <p class="text-gray-700 break-all">
-    <strong>User info:</strong> <%= mobile_device.user_info %>
-  </p>
-  <p class="text-gray-700 break-all">
-    <strong>Device info:</strong> <%= mobile_device.device_info %>
-  </p>
-  <p class="text-gray-700">
-    <strong>Created At:</strong> <%= time_ago_in_words(mobile_device.created_at) %>
-  </p>
-  <p class="text-gray-700">
-    <strong>Updated At:</strong> <%= time_ago_in_words(mobile_device.updated_at) %>
-  </p>
+  <div class="space-y-2">
+    <p class="text-gray-700 break-all">
+      <span
+        class="mr-1"
+        data-controller="clipboard" 
+        data-clipboard-text-to-copy-value="<%= mobile_device.external_key %>"
+        data-action="click->clipboard#copy">
+        <span class="btn btn-xs" data-clipboard-target="text">
+          Copy
+        </span>
+      </span>
+      <%= link_to mobile_device_path(mobile_device.external_key), class: "underline hover:text-blue-500" do %>
+        <strong>
+          External Key:
+        </strong>
+      <% end %>
+      <%= mobile_device.external_key %>
+    </p>
+    <p class="text-gray-700 break-all mb-3 pb-3 border-b border-b-gray-300">
+      <span
+        class="mr-1"
+        data-controller="clipboard" 
+        data-clipboard-text-to-copy-value="<%= mobile_device.device_token %>"
+        data-action="click->clipboard#copy">
+        <span class="btn btn-xs" data-clipboard-target="text">
+          Copy
+        </span>
+      </span>
+      <strong>Token:</strong>
+      <%= mobile_device.device_token %>
+    </p>
+    <p class="text-gray-700 break-all">
+      <strong>User info:</strong> <%= mobile_device.user_info %>
+    </p>
+    <p class="text-gray-700 break-all">
+      <strong>Device info:</strong> <%= mobile_device.device_info %>
+    </p>
+  </div>
+  <div class="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-t-gray-300">
+    <p class="text-gray-700">
+      <strong>Created At:</strong> <%= time_ago_in_words(mobile_device.created_at) %>
+    </p>
+    <p class="text-gray-700">
+      <strong>Updated At:</strong> <%= time_ago_in_words(mobile_device.updated_at) %>
+    </p>
+  </div>
 </div>

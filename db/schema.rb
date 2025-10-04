@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_26_130557) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_13_121649) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -23,6 +23,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_26_130557) do
     t.string "client_token"
     t.text "fcm_json_key"
     t.string "fcm_project_id"
+    t.string "huawei_client_id"
+    t.string "huawei_client_secret"
   end
 
   create_table "mobile_devices", force: :cascade do |t|
@@ -33,6 +35,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_26_130557) do
     t.string "device_info"
     t.string "external_key"
     t.bigint "mobile_access_id"
+    t.integer "push_provider", default: 0
     t.index ["external_key", "device_token", "mobile_access_id"], name: "index_mobile_devices_on_unique_combination", unique: true
     t.index ["external_key"], name: "index_mobile_devices_on_external_key"
     t.index ["mobile_access_id"], name: "index_mobile_devices_on_mobile_access_id"

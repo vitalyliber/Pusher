@@ -11,3 +11,8 @@ two:
   topics: ["general", "topic1"]
   external_key: user321
   mobile_access: mobile_access
+
+three:
+  topics: ["general", "topic1"]
+  external_key: huawei_user_1
+  mobile_access: mobile_access

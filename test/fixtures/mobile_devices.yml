@@ -2,3 +2,10 @@ mobile_device:
   device_token: "12345"
   mobile_access: "mobile_access"
   external_key: "user123"
+  push_provider: firebase
+
+mobile_device_huawei:
+  device_token: "huawei_12345"
+  mobile_access: "mobile_access"
+  external_key: "huawei_user_1"
+  push_provider: huawei

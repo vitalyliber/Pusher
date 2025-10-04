@@ -7,6 +7,10 @@
     <%= form.label :external_key, class: "label" %>
     <%= form.text_field :external_key, class: "input input-bordered w-full" %>
   </div>
+  <div class="form-control">
+    <%= form.label :push_provider, class: "label" %>
+    <%= form.select :push_provider, options_for_select([['Firebase', 'firebase'], ['Huawei', 'huawei']], @mobile_device.push_provider), {}, class: "select select-bordered w-full" %>
+  </div>
   <details>
     <summary>Optional fields</summary>
     <div class="form-control">

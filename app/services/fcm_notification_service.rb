@@ -46,6 +46,7 @@ class FcmNotificationService
     token = nil
     if external_key.present?
       token = MobileUser.find_by(external_key:).device_group_token
+      return { error: "[Pusher] the device_group_token doesn't exist for the provided external key." } if topic.blank? && token.blank?
     end
     data = JSON.parse(data) if data.is_a?(String)
     data = { **data, topic:, token: }.reject { |key, value| value.blank? }

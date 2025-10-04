@@ -1,5 +1,5 @@
 # app/services/mobile_device_service.rb
-class MobileDeviceService
+class HuaweiMobileDeviceService < BaseMobileDeviceService
   attr_reader :device_token, :user_info, :device_info, :external_key, :mobile_access
 
   def initialize(device_token, user_info, device_info, external_key, mobile_access)
@@ -14,15 +14,16 @@ class MobileDeviceService
     return { json: { errors: [ "Device token can't be blank" ] }, status: :bad_request } if device_token.blank?
 
     # Check the device token is valid
-    result = mobile_access.get_instance_id_info(device_token)
+    huawei_notification_service = mobile_access.huawei_notification_service
+    isValid = huawei_notification_service.valid?(device_token)
 
-    if result[:status_code] != 200
-      Rails.logger.error "Error getting instance ID info for device token: #{device_token}, status code: #{result[:status_code]}, error: #{result[:body]}"
-      return { json: { errors: [ "Invalid device token" ] }, status: 400 }
+    unless isValid
+      Rails.logger.error "The Huawei device token '#{device_token}' is invalid"
+      return { json: { errors: [ "The Huawei device token is invalid" ] }, status: 400 }
     end
 
     if external_key.blank?
-      mobile_access.subscribe_to_basic_topics(device_token)
+      mobile_access.subscribe_to_basic_topics(device_token, "huawei")
       MobileDevice.find_by(device_token:)&.delete
 
       return { json: { messages: [ "Subscribed to the 'unregistered' and 'general' topics. A mobile device is not created because an external_key is empty." ] }, status: 200 }
@@ -50,15 +51,15 @@ class MobileDeviceService
       end
     end
 
-    mobile_device = MobileDevice.new(device_token:, user_info:, device_info:, external_key:, mobile_access:)
+    mobile_device = MobileDevice.new(device_token:, user_info:, device_info:, external_key:, mobile_access:, push_provider: :huawei)
 
     return { json: { errors: mobile_device.errors.full_messages }, status: 400 } unless mobile_device.valid?
 
     if mobile_device.save
       process_mobile_user(mobile_device)
-      mobile_device.unsubscribe_from_unregistered_topic
+      unsubscribe_from_unregistered_topic(mobile_device)
 
-      { json: {} }
+      { json: { status: 200 } }
     else
       { json: { errors: mobile_device.errors.full_messages }, status: 400 }
     end
@@ -72,16 +73,27 @@ class MobileDeviceService
       external_key:
     )
 
-    if mobile_user
-      mobile_user.update_device_tokens_in_device_group
-    else
+    unless mobile_user
       mobile_user = MobileUser.create(
         mobile_access:,
         external_key:
       )
-      mobile_user.create_device_group_token
     end
 
-    mobile_device.subscribe_to_topics
+    subscribe_to_topics(mobile_device)
+  end
+
+  def subscribe_to_topics(mobile_device)
+    device_token = mobile_device.device_token
+    mobile_device.mobile_user.topics.each do |topic|
+      Rails.logger.error "[Huawei] Subscribing the topic: #{topic} with device token: #{device_token}"
+      mobile_access.huawei_notification_service.subscribe_to_topic(topic, [ device_token ])
+    end
+  end
+
+  def unsubscribe_from_unregistered_topic(mobile_device)
+    device_token = mobile_device.device_token
+    Rails.logger.error "[Huawei] Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
+    mobile_access.huawei_notification_service.unsubscribe_from_topic(UNREGISTERED_TOPIC, [ device_token ])
   end
 end

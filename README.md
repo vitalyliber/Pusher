@@ -5,7 +5,7 @@
 ## Endpoints
 
 - [POST /api/mobile_devices](#create-mobile-device)
-- [DELETE /api/mobile_device/:push_token](#remove-mobile-device)
+- [DELETE /api/mobile_devices/:push_token](#remove-mobile-device)
 - [POST /api/push_notifications](#create-push-notifications)
 
 Auth headers:
@@ -23,6 +23,7 @@ Params:
 
 ```json
 {
+  "push_provider": "firebase", // huawei
   "device_token": "xxx",
   "user_info": "Put here the user ID, Phone, Email. It will help to find all user's mobile devices",
   "device_info": "iOS/Andoid, Samsung Galaxy s25",
@@ -40,11 +41,16 @@ Notice that in this case, you will not create any records on the server side.
 
 Pusher creates a mobile device when it receives the device token with an external key and removes the "unregistered" topic.
 
+**Push provider**
+
+- firebase: Firebase Cloud Messages
+- huawei: Huawei Push Kit
+
 ### Remove mobile device
 
 _Run this method when the user logout._
 
-DELETE `/api/mobile_device/:push_token`
+DELETE `/api/mobile_devices/:push_token`
 
 Response status: `200`
 
@@ -57,7 +63,7 @@ Params:
 
 ```json
 {
-  "payload": {
+  "firebase_payload": {
     "notification": {
       "title": "Test title",
       "body": "Test message"
@@ -83,6 +89,23 @@ Params:
           "badge": 2,
           "sound": "default",
           "content-available": 1
+        }
+      }
+    }
+  },
+  "huawei_payload": {
+    "validate_only": false,
+    "message": {
+      "android": {
+        "notification": {
+          "title": "Test title",
+          "body": "Test message",
+          "click_action": {
+            "type": 3
+          },
+        },
+        "data": {
+          "key": "value"
         }
       }
     }

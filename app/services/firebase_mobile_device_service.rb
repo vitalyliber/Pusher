@@ -1,0 +1,106 @@
+# app/services/mobile_device_service.rb
+class FirebaseMobileDeviceService < BaseMobileDeviceService
+  attr_reader :device_token, :user_info, :device_info, :external_key, :mobile_access
+
+  def initialize(device_token, user_info, device_info, external_key, mobile_access)
+    @device_token = device_token
+    @user_info = user_info
+    @device_info = device_info
+    @external_key = external_key
+    @mobile_access = mobile_access
+  end
+
+  def create
+    return { json: { errors: [ "Device token can't be blank" ] }, status: :bad_request } if device_token.blank?
+
+    # Check the device token is valid
+    result = mobile_access.get_instance_id_info(device_token)
+
+    if result[:status_code] != 200
+      Rails.logger.error "Error getting instance ID info for device token: #{device_token}, status code: #{result[:status_code]}, error: #{result[:body]}"
+      return { json: { errors: [ "Firebase device token is invalid" ] }, status: 400 }
+    end
+
+    if external_key.blank?
+      mobile_access.subscribe_to_basic_topics(device_token, "firebase")
+      MobileDevice.find_by(device_token:)&.delete
+
+      return { json: { messages: [ "Subscribed to the 'unregistered' and 'general' topics. A mobile device is not created because an external_key is empty." ] }, status: 200 }
+    end
+
+    mobile_device = MobileDevice.find_by(device_token:)
+
+    if mobile_device
+      mobile_device.touch
+
+      if mobile_device.external_key == external_key
+        return { json: { mobile_device: }, status: 200 }
+      else
+        # It means that the external key has changed, so we need to update it
+        # This case can happen when the user re-registers with a different account
+        # - Devs forgot to delete the old device token
+        Rails.logger.info "Updating external key for existing mobile device: #{mobile_device.device_token}"
+        if mobile_device.update(external_key:)
+          process_mobile_user(mobile_device)
+
+          return { json: {  mobile_device: }, status: 200 }
+        else
+          return { json: { errors: mobile_device.errors.full_messages }, status: 400 }
+        end
+      end
+    end
+
+    mobile_device = MobileDevice.new(device_token:, user_info:, device_info:, external_key:, mobile_access:)
+
+    return { json: { errors: mobile_device.errors.full_messages }, status: 400 } unless mobile_device.valid?
+
+    if mobile_device.save
+      process_mobile_user(mobile_device)
+      unsubscribe_from_unregistered_topic(mobile_device)
+
+      { json: { status: 200 } }
+    else
+      { json: { errors: mobile_device.errors.full_messages }, status: 400 }
+    end
+  end
+
+  private
+
+  def process_mobile_user(mobile_device)
+    mobile_user = MobileUser.find_by(
+      mobile_access:,
+      external_key:
+    )
+
+    if mobile_user
+      if mobile_user.device_group_token.present?
+        mobile_user.update_device_tokens_in_device_group
+      else
+        # If we have already created a mobile device using the 'HuaweiMobileDevice' service
+        mobile_user.create_device_group_token
+      end
+    else
+      mobile_user = MobileUser.create(
+        mobile_access:,
+        external_key:
+      )
+      mobile_user.create_device_group_token
+    end
+
+    subscribe_to_topics(mobile_device)
+  end
+
+  def subscribe_to_topics(mobile_device)
+    device_token = mobile_device.device_token
+    mobile_device.mobile_user.topics.each do |topic|
+      Rails.logger.error "[Firebase] Subscribing to topic: #{topic} with device token: #{device_token}"
+      mobile_access.notification_service.batch_topic_subscription(topic, [ device_token ])
+    end
+  end
+
+  def unsubscribe_from_unregistered_topic(mobile_device)
+    device_token = mobile_device.device_token
+    Rails.logger.error "[Firebase] Unsubscribing from 'unregistered' and 'general' topics for device token: #{device_token}"
+    mobile_access.notification_service.batch_topic_unsubscription(UNREGISTERED_TOPIC, [ device_token ])
+  end
+end

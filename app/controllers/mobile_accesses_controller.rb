@@ -27,6 +27,6 @@ class MobileAccessesController < ApplicationController
   private
 
   def mobile_access_params
-    params.require(:mobile_access).permit(:fcm_project_id, :fcm_json_key)
+    params.require(:mobile_access).permit(:fcm_project_id, :fcm_json_key, :huawei_client_id, :huawei_client_secret)
   end
 end

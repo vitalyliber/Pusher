@@ -20,11 +20,16 @@ class MobileAccess < ApplicationRecord
     @_notification_service ||= FcmNotificationService.new(fcm_json_key, fcm_project_id)
   end
 
-  def subscribe_to_basic_topics(device_token)
-    [ "unregistered", "general" ].each do |topic|
+  def subscribe_to_basic_topics(device_token, push_provider)
+    [ BaseMobileDeviceService::UNREGISTERED_TOPIC, BaseMobileDeviceService::GENERAL_TOPIC ].each do |topic|
       Rails.logger.error "Subscribing to topic: #{topic} with device token: #{device_token}"
-      notification_service.batch_topic_subscription(topic, [ device_token ])
+      notification_service.batch_topic_subscription(topic, [ device_token ]) if push_provider == "firebase"
+      huawei_notification_service.subscribe_to_topic(topic, [ device_token ]) if push_provider == "huawei"
     end
+  end
+
+  def huawei_notification_service
+    @_huawei_notification_service ||= HuaweiNotificationService.new(huawei_client_id, huawei_client_secret)
   end
 
   private
