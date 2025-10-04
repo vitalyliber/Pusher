@@ -85,7 +85,7 @@ class HuaweiNotificationService
         }
       }
     }
-    result = send_notification(tokens: [ token ], payload: )
+    result = send_notification(tokens: [ token ], payload:)
     Rails.logger.info result
     # 80300007: All the tokens are invalid
     # 80200003: Access token expired
