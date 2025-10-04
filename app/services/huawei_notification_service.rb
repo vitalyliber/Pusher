@@ -51,8 +51,8 @@ class HuaweiNotificationService
 
     body[:message][:token] = tokens if tokens.present?
     body[:message][:topic] = topic if topic.present?
-    notification_data = body.dig(:message, :android, :notification, :data)
-    body[:message][:android][:notification][:data] = notification_data.to_json if notification_data.present?
+    notification_data = body.dig(:message, :android, :data)
+    body[:message][:android][:data] = notification_data.to_json if notification_data.present? && notification_data.is_a?(Object)
 
     response = HTTParty.post(
       "https://push-api.cloud.huawei.com/v1/#{client_id}/messages:send",
@@ -71,7 +71,21 @@ class HuaweiNotificationService
   end
 
   def valid?(token)
-    result = send_notification(tokens: [ token ], payload: { "validate_only": false, message: { data: { test: :validate_token }.to_json } })
+    payload = {
+      "validate_only": true,
+      "message": {
+        "android": {
+          "notification": {
+            "title": "Test title",
+            "body": "Test message",
+            "click_action": {
+              "type": 3
+            }
+          }
+        }
+      }
+    }
+    result = send_notification(tokens: [ token ], payload: )
     Rails.logger.info result
     # 80300007: All the tokens are invalid
     # 80200003: Access token expired

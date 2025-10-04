@@ -174,9 +174,9 @@ export default class extends Controller {
             title: "Test title",
             body: "Test message",
             click_action: { type: 3 },
-            data: {
-              key1: "value1",
-            },
+          },
+          data: {
+            key1: "value1",
           },
         },
       },

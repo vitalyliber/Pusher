@@ -103,9 +103,9 @@ Params:
           "click_action": {
             "type": 3
           },
-          "data": {
-            "key1": "value1"
-          }
+        },
+        "data": {
+          "key": "value"
         }
       }
     }
