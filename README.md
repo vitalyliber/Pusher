@@ -1,5 +1,17 @@
 # README
 
+## What is the Pusher Project?
+
+In simple terms, Pusher is a backend web service built with Ruby on Rails that helps apps send push notifications to mobile devices. Think of it as a smart middleman: your mobile app tells it "hey, this user's phone should get updates," and then your server can blast out messages to those phones via services like Firebase (Google's push system) or Huawei's push kit.
+
+## What Does It Do, Step by Step?
+
+1. **Registers Devices**: When someone opens your mobile app, it sends details like a unique device ID (token), user info (e.g., their ID or email), and optional "topics" (like channels for specific alerts, e.g., "news" or "sales"). Pusher saves this and subscribes the device to those topics. This happens every time the app starts.
+
+2. **Handles Unregisters**: When the user logs out or signs out from the app, it removes the device from the list, so no more spam.
+
+3. **Sends Notifications**: From your server, you tell Pusher to fire off a push. You pick a topic (to target specific groups) or a user key, add the message (title, body, extra data), and tweak settings like sounds, icons, or priorities for Android/iOS. Pusher then forwards it to Firebase or Huawei, who actually deliver it to the phones.
+
 ## API
 
 ## Endpoints
