@@ -9,7 +9,7 @@
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.4.5
-ARG NODE_VERSION=20.17.0 # Specify the latest stable Node.js version (LTS as of 2025)
+ARG NODE_VERSION=22.11.0 # Specify the latest stable Node.js version (LTS as of 2025)
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
@@ -17,10 +17,10 @@ WORKDIR /rails
 
 # Install base packages, including Node.js and npm
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install --no-install-recommends -y nodejs && \
-    npm install -g npm@latest && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client
+
+RUN apt install nodejs npm -y
+RUN npm install -g npm@latest && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
