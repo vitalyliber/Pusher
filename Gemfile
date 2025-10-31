@@ -71,5 +71,5 @@ group :test do
 end
 
 gem "honeybadger", "~> 6.0"
-gem "pagy", "~> 9.3"
+gem "pagy", "~> 9.4"
 gem "pg_search"
