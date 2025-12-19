@@ -29,7 +29,7 @@ class HuaweiNotificationService
     tokens = nil
 
     if external_key.present?
-      tokens = MobileUser.find_by(external_key:).huawei_device_tokens
+      tokens = MobileUser.find_by(external_key:)&.huawei_device_tokens
       return { error: "[Pusher] tokens not found by the provided external key." } if topic.blank? && tokens.blank?
     end
     payload = JSON.parse(payload, symbolize_names: true) if payload.is_a?(String)
