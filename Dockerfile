@@ -44,8 +44,15 @@ RUN bundle install && \
     # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
     bundle exec bootsnap precompile -j 1 --gemfile
 
+# Install bun for JavaScript dependencies
+RUN curl -fsSL https://bun.sh/install | bash && \
+    /root/.bun/bin/bun --version
+
 # Copy application code
 COPY . .
+
+# Install JavaScript dependencies with bun
+RUN /root/.bun/bin/bun install --frozen-lockfile
 
 # Precompile bootsnap code for faster boot times.
 # -j 1 disable parallel compilation to avoid a QEMU bug: https://github.com/rails/bootsnap/issues/495
