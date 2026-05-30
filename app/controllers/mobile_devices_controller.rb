@@ -55,7 +55,7 @@ class MobileDevicesController < ApplicationController
   end
 
   def mobile_device_count(platform, timeframe)
-    cache_key = "mobile_device_#{platform}_stats_#{timeframe}"
+    cache_key = "mobile_device_#{mobile_access.id}_#{platform}_stats_#{timeframe}"
     timeframe_duration = case timeframe
     when :daily then 1.day
     when :weekly then 1.week
