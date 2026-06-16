@@ -70,6 +70,6 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "honeybadger", "~> 6.0"
+gem "honeybadger", "~> 6.1"
 gem "pagy", "~> 9.3"
 gem "pg_search"
