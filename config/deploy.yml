@@ -146,5 +146,6 @@ accessories:
         POSTGRES_HOST: pusher-db
         POSTGRES_PORT: 5432
         CRON_SCHEDULE: "0 0 * * *"
+        REMOVE_BEFORE: 14
     directories:
       - backups:/backups
